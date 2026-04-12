@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  padding: 1.5rem;
+  font-family: system-ui, sans-serif;
+}
+
+.external-demo {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #0f766e, #2563eb);
+  color: white;
+}

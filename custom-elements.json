@@ -1,0 +1,459 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/code-playground.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CodePlayground",
+          "members": [
+            {
+              "kind": "field",
+              "name": "value"
+            },
+            {
+              "kind": "field",
+              "name": "mode"
+            },
+            {
+              "kind": "field",
+              "name": "runMode"
+            },
+            {
+              "kind": "field",
+              "name": "previewPosition"
+            },
+            {
+              "kind": "field",
+              "name": "debounce"
+            },
+            {
+              "kind": "field",
+              "name": "persistKey",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "inheritTheme",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "showConsole",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "sourceUrls",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "getValue"
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "parameters": [
+                {
+                  "name": "nextValue"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "run"
+            },
+            {
+              "kind": "method",
+              "name": "softRun"
+            },
+            {
+              "kind": "method",
+              "name": "reset"
+            },
+            {
+              "kind": "method",
+              "name": "copy",
+              "parameters": [
+                {
+                  "name": "type",
+                  "default": "this._activeTab"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "copyConsole"
+            },
+            {
+              "kind": "method",
+              "name": "downloadHTML"
+            },
+            {
+              "kind": "method",
+              "name": "openInCodePen"
+            },
+            {
+              "kind": "method",
+              "name": "clearConsole"
+            },
+            {
+              "kind": "method",
+              "name": "reloadSources",
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "{ types?: string[], forceApply?: boolean }"
+                  }
+                }
+              ],
+              "description": "Reload any configured external source files."
+            }
+          ],
+          "events": [
+            {
+              "name": "code-playground:run",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "code-playground:source-error",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "code-playground:sources-loaded",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "code-playground:change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "eventName",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "code-playground:ready",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "mode"
+            },
+            {
+              "name": "run-mode"
+            },
+            {
+              "name": "debounce"
+            },
+            {
+              "name": "preview-position"
+            },
+            {
+              "name": "show-console"
+            },
+            {
+              "name": "persist"
+            },
+            {
+              "name": "inherit-theme"
+            },
+            {
+              "name": "html-src"
+            },
+            {
+              "name": "css-src"
+            },
+            {
+              "name": "js-src"
+            },
+            {
+              "name": "head-src"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "code-playground",
+          "customElement": true,
+          "cssParts": [
+            {
+              "name": "toolbar",
+              "description": "The toolbar containing file tabs, status, and primary actions."
+            },
+            {
+              "name": "editor-panel",
+              "description": "The editor workspace panel that hosts the CodeMirror instances."
+            },
+            {
+              "name": "preview-panel",
+              "description": "The preview iframe panel."
+            },
+            {
+              "name": "console-panel",
+              "description": "The console output panel that shows logs and runtime errors."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CodePlayground",
+          "declaration": {
+            "name": "CodePlayground",
+            "module": "src/code-playground.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "code-playground",
+          "declaration": {
+            "name": "CodePlayground",
+            "module": "src/code-playground.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/editor-runtime.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createEditor",
+          "parameters": [
+            {
+              "name": "{ parent, type, value, onChange, onRunShortcut }"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "setEditorValue",
+          "parameters": [
+            {
+              "name": "view"
+            },
+            {
+              "name": "value"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "focusEditor",
+          "parameters": [
+            {
+              "name": "view"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createEditor",
+          "declaration": {
+            "name": "createEditor",
+            "module": "src/lib/editor-runtime.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "setEditorValue",
+          "declaration": {
+            "name": "setEditorValue",
+            "module": "src/lib/editor-runtime.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "focusEditor",
+          "declaration": {
+            "name": "focusEditor",
+            "module": "src/lib/editor-runtime.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/preview-document.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "normalizePlaygroundSources",
+          "parameters": [
+            {
+              "name": "{ html = '', css = '', js = '', head = '' }"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "composePreviewDocument",
+          "parameters": [
+            {
+              "name": "options"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "composeExportDocument",
+          "parameters": [
+            {
+              "name": "options"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "normalizePlaygroundSources",
+          "declaration": {
+            "name": "normalizePlaygroundSources",
+            "module": "src/lib/preview-document.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "composePreviewDocument",
+          "declaration": {
+            "name": "composePreviewDocument",
+            "module": "src/lib/preview-document.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "composeExportDocument",
+          "declaration": {
+            "name": "composeExportDocument",
+            "module": "src/lib/preview-document.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/storage.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "makeStorageKey",
+          "parameters": [
+            {
+              "name": "key"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "readStorage",
+          "parameters": [
+            {
+              "name": "key"
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "writeStorage",
+          "parameters": [
+            {
+              "name": "key"
+            },
+            {
+              "name": "value"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "makeStorageKey",
+          "declaration": {
+            "name": "makeStorageKey",
+            "module": "src/lib/storage.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "readStorage",
+          "declaration": {
+            "name": "readStorage",
+            "module": "src/lib/storage.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "writeStorage",
+          "declaration": {
+            "name": "writeStorage",
+            "module": "src/lib/storage.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/theme-observer.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "detectPageThemeState"
+        },
+        {
+          "kind": "function",
+          "name": "observePageTheme",
+          "parameters": [
+            {
+              "name": "listener"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "detectPageThemeState",
+          "declaration": {
+            "name": "detectPageThemeState",
+            "module": "src/lib/theme-observer.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "observePageTheme",
+          "declaration": {
+            "name": "observePageTheme",
+            "module": "src/lib/theme-observer.js"
+          }
+        }
+      ]
+    }
+  ]
+}

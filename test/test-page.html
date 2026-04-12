@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>code-playground test page</title>
+    <script type="module" src="../src/code-playground.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 1.5rem;
+        font-family: system-ui, sans-serif;
+        background: #eef3fb;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <code-playground id="auto-playground" inherit-theme title="Auto test">
+        <textarea slot="html"><h1 id="title">Auto preview</h1><p>Testing auto-run.</p></textarea>
+        <textarea slot="css">body { margin: 0; padding: 1.5rem; font-family: system-ui, sans-serif; }</textarea>
+        <textarea slot="js">console.log('auto ready')</textarea>
+      </code-playground>
+
+      <code-playground id="manual-playground" run-mode="manual" inherit-theme title="Manual test">
+        <textarea slot="html"><h1>Manual preview</h1><p>Changes should wait for Run.</p></textarea>
+        <textarea slot="css">body { margin: 0; padding: 1.5rem; font-family: system-ui, sans-serif; }</textarea>
+        <textarea slot="js"></textarea>
+      </code-playground>
+
+      <code-playground id="persist-playground" persist="playwright-persist" title="Persist test">
+        <textarea slot="html"><p>Persist me</p></textarea>
+        <textarea slot="css">body { font-family: system-ui, sans-serif; }</textarea>
+        <textarea slot="js">console.log('persist ready')</textarea>
+      </code-playground>
+
+      <code-playground
+        id="external-playground"
+        title="External source test"
+        html-src="./fixtures/external-demo.html"
+        css-src="./fixtures/external-demo.css"
+        js-src="./fixtures/external-demo.js"
+        head-src="./fixtures/external-demo-head.html">
+      </code-playground>
+
+      <code-playground
+        id="missing-source-playground"
+        title="Missing source test"
+        js-src="./fixtures/missing-demo.js">
+        <textarea slot="html"><p>Fallback preview</p></textarea>
+        <textarea slot="css">body { font-family: system-ui, sans-serif; }</textarea>
+      </code-playground>
+    </main>
+  </body>
+</html>

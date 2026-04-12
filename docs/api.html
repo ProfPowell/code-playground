@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>&lt;code-playground&gt; API</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a class="nav-brand" href="index.html">&lt;code-playground&gt;</a>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="demos.html">Demos</a>
+          <a href="api.html" class="active">API</a>
+          <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#x1f313;</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>API Reference</h1>
+        <p class="tagline">Attributes, properties, methods, events, slots, and styling hooks for <code>&lt;code-playground&gt;</code></p>
+      </section>
+
+      <!-- Attributes -->
+      <section id="attributes">
+        <h2>Attributes</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Attribute</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>mode</code></td>
+              <td><code>string</code></td>
+              <td><code>"auto"</code></td>
+              <td>Color mode for the shell. <code>"auto"</code> follows page signals, or set <code>"light"</code> / <code>"dark"</code>.</td>
+            </tr>
+            <tr>
+              <td><code>run-mode</code></td>
+              <td><code>string</code></td>
+              <td><code>"auto"</code></td>
+              <td><code>"auto"</code> for debounced live preview or <code>"manual"</code> for explicit runs.</td>
+            </tr>
+            <tr>
+              <td><code>debounce</code></td>
+              <td><code>number</code></td>
+              <td><code>300</code></td>
+              <td>Auto-run delay in milliseconds.</td>
+            </tr>
+            <tr>
+              <td><code>preview-position</code></td>
+              <td><code>string</code></td>
+              <td><code>"right"</code></td>
+              <td>Position of the preview pane: <code>"right"</code> or <code>"bottom"</code>.</td>
+            </tr>
+            <tr>
+              <td><code>html-src</code></td>
+              <td><code>string</code></td>
+              <td>&mdash;</td>
+              <td>URL of an external HTML file to load into the HTML panel.</td>
+            </tr>
+            <tr>
+              <td><code>css-src</code></td>
+              <td><code>string</code></td>
+              <td>&mdash;</td>
+              <td>URL of an external CSS file to load into the CSS panel.</td>
+            </tr>
+            <tr>
+              <td><code>js-src</code></td>
+              <td><code>string</code></td>
+              <td>&mdash;</td>
+              <td>URL of an external JavaScript file to load into the JS panel.</td>
+            </tr>
+            <tr>
+              <td><code>head-src</code></td>
+              <td><code>string</code></td>
+              <td>&mdash;</td>
+              <td>URL of a preview-only head fragment (e.g. <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code>, extra <code>&lt;meta&gt;</code> tags).</td>
+            </tr>
+            <tr>
+              <td><code>persist</code></td>
+              <td><code>string</code></td>
+              <td>&mdash;</td>
+              <td>localStorage key used for saving source, active tab, and split position.</td>
+            </tr>
+            <tr>
+              <td><code>inherit-theme</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>Copies page <code>data-mode</code> and <code>data-theme</code> to the preview document.</td>
+            </tr>
+            <tr>
+              <td><code>show-console</code></td>
+              <td><code>boolean</code></td>
+              <td><code>true</code></td>
+              <td>Set to <code>"false"</code> to hide the console panel.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Properties -->
+      <section id="properties">
+        <h2>Properties</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>{ html, css, js, head }</code></td>
+              <td>Get or set the current source payload.</td>
+            </tr>
+            <tr>
+              <td><code>mode</code></td>
+              <td><code>string</code></td>
+              <td>Get or set the color mode.</td>
+            </tr>
+            <tr>
+              <td><code>runMode</code></td>
+              <td><code>string</code></td>
+              <td>Get or set the run mode (<code>"auto"</code> or <code>"manual"</code>).</td>
+            </tr>
+            <tr>
+              <td><code>previewPosition</code></td>
+              <td><code>string</code></td>
+              <td>Get or set the preview position (<code>"right"</code> or <code>"bottom"</code>).</td>
+            </tr>
+            <tr>
+              <td><code>debounce</code></td>
+              <td><code>number</code></td>
+              <td>Get or set the debounce delay.</td>
+            </tr>
+            <tr>
+              <td><code>persistKey</code></td>
+              <td><code>string</code></td>
+              <td>Read-only. The current localStorage key.</td>
+            </tr>
+            <tr>
+              <td><code>inheritTheme</code></td>
+              <td><code>boolean</code></td>
+              <td>Read-only. Whether theme inheritance is active.</td>
+            </tr>
+            <tr>
+              <td><code>showConsole</code></td>
+              <td><code>boolean</code></td>
+              <td>Read-only. Whether the console panel is visible.</td>
+            </tr>
+            <tr>
+              <td><code>sourceUrls</code></td>
+              <td><code>object</code></td>
+              <td>Read-only. The configured <code>*-src</code> URLs.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Methods -->
+      <section id="methods">
+        <h2>Methods</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Method</th><th>Returns</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>getValue()</code></td>
+              <td><code>{ html, css, js, head }</code></td>
+              <td>Returns the current source payload.</td>
+            </tr>
+            <tr>
+              <td><code>setValue(value)</code></td>
+              <td><code>void</code></td>
+              <td>Updates one or more source panels programmatically.</td>
+            </tr>
+            <tr>
+              <td><code>run()</code></td>
+              <td><code>void</code></td>
+              <td>Rebuilds the preview iframe immediately.</td>
+            </tr>
+            <tr>
+              <td><code>softRun()</code></td>
+              <td><code>void</code></td>
+              <td>Re-executes the JS panel inside the existing iframe without rebuilding the document.</td>
+            </tr>
+            <tr>
+              <td><code>reset()</code></td>
+              <td><code>void</code></td>
+              <td>Restores the original authored source values.</td>
+            </tr>
+            <tr>
+              <td><code>reloadSources()</code></td>
+              <td><code>Promise&lt;void&gt;</code></td>
+              <td>Refetches any configured <code>*-src</code> files and replaces editor content.</td>
+            </tr>
+            <tr>
+              <td><code>copy(type?)</code></td>
+              <td><code>Promise&lt;void&gt;</code></td>
+              <td>Copies the requested source panel (<code>"html"</code>, <code>"css"</code>, or <code>"js"</code>) to the clipboard. Defaults to the active tab.</td>
+            </tr>
+            <tr>
+              <td><code>copyConsole()</code></td>
+              <td><code>Promise&lt;void&gt;</code></td>
+              <td>Copies visible console rows, respecting the active filter, search, and repeat collapsing.</td>
+            </tr>
+            <tr>
+              <td><code>downloadHTML()</code></td>
+              <td><code>void</code></td>
+              <td>Downloads a standalone HTML document assembled from the current state.</td>
+            </tr>
+            <tr>
+              <td><code>openInCodePen()</code></td>
+              <td><code>void</code></td>
+              <td>Opens the current payload in a new CodePen pen.</td>
+            </tr>
+            <tr>
+              <td><code>clearConsole()</code></td>
+              <td><code>void</code></td>
+              <td>Clears captured console output.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Events -->
+      <section id="events">
+        <h2>Events</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Event</th><th>Detail</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>code-playground:change</code></td>
+              <td><code>{ type, value }</code></td>
+              <td>Fires when an editor value changes.</td>
+            </tr>
+            <tr>
+              <td><code>code-playground:run</code></td>
+              <td><code>{ html, css, js, head }</code></td>
+              <td>Fires after the preview document is rebuilt.</td>
+            </tr>
+            <tr>
+              <td><code>code-playground:ready</code></td>
+              <td>&mdash;</td>
+              <td>Fires when the iframe bootstrap reports ready.</td>
+            </tr>
+            <tr>
+              <td><code>code-playground:console</code></td>
+              <td><code>{ level, args }</code></td>
+              <td>Fires for bridged console calls from the iframe.</td>
+            </tr>
+            <tr>
+              <td><code>code-playground:error</code></td>
+              <td><code>{ level, args }</code></td>
+              <td>Fires for bridged runtime errors and unhandled rejections.</td>
+            </tr>
+            <tr>
+              <td><code>code-playground:sources-loaded</code></td>
+              <td><code>{ loaded }</code></td>
+              <td>Fires after one or more external source files load successfully.</td>
+            </tr>
+            <tr>
+              <td><code>code-playground:source-error</code></td>
+              <td><code>{ type, url, error }</code></td>
+              <td>Fires when a configured external source file fails to load.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Slots -->
+      <section id="slots">
+        <h2>Slots</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Slot</th><th>Expected Element</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>html</code></td>
+              <td><code>&lt;textarea&gt;</code></td>
+              <td>Initial HTML source content.</td>
+            </tr>
+            <tr>
+              <td><code>css</code></td>
+              <td><code>&lt;textarea&gt;</code></td>
+              <td>Initial CSS source content.</td>
+            </tr>
+            <tr>
+              <td><code>js</code></td>
+              <td><code>&lt;textarea&gt;</code></td>
+              <td>Initial JavaScript source content.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- CSS Parts -->
+      <section id="css-parts">
+        <h2>CSS Parts</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Part</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>::part(toolbar)</code></td>
+              <td>File tabs, status indicators, and primary action buttons.</td>
+            </tr>
+            <tr>
+              <td><code>::part(editor-panel)</code></td>
+              <td>Code editor workspace containing the active tab's editor.</td>
+            </tr>
+            <tr>
+              <td><code>::part(preview-panel)</code></td>
+              <td>Preview iframe panel.</td>
+            </tr>
+            <tr>
+              <td><code>::part(console-panel)</code></td>
+              <td>Console output panel with filters and search.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- CSS Custom Properties -->
+      <section id="css-properties">
+        <h2>CSS Custom Properties</h2>
+        <p>Override these properties on the <code>code-playground</code> selector to customize the look. Each property falls back to a Vanilla Breeze design token when available.</p>
+        <table class="api-table">
+          <thead>
+            <tr><th>Property</th><th>Default (light)</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--cp-bg</code></td><td><code>#ffffff</code></td><td>Shell background</td></tr>
+            <tr><td><code>--cp-panel-bg</code></td><td><code>#f6f8fb</code></td><td>Panel background</td></tr>
+            <tr><td><code>--cp-editor-bg</code></td><td><code>#f8fafc</code></td><td>Editor background</td></tr>
+            <tr><td><code>--cp-preview-bg</code></td><td><code>#ffffff</code></td><td>Preview iframe background</td></tr>
+            <tr><td><code>--cp-border</code></td><td><code>#d0d7de</code></td><td>Primary border color</td></tr>
+            <tr><td><code>--cp-border-subtle</code></td><td><code>#e5e7eb</code></td><td>Subtle / inner border color</td></tr>
+            <tr><td><code>--cp-text</code></td><td><code>#111827</code></td><td>Primary text color</td></tr>
+            <tr><td><code>--cp-muted</code></td><td><code>#6b7280</code></td><td>Muted / secondary text color</td></tr>
+            <tr><td><code>--cp-accent</code></td><td><code>#2563eb</code></td><td>Accent / interactive color</td></tr>
+            <tr><td><code>--cp-radius</code></td><td><code>16px</code></td><td>Outer border radius</td></tr>
+            <tr><td><code>--cp-radius-inner</code></td><td><code>12px</code></td><td>Inner panel border radius</td></tr>
+            <tr><td><code>--cp-font-sans</code></td><td><code>"SF Pro Text", sans-serif</code></td><td>UI font stack</td></tr>
+            <tr><td><code>--cp-font-mono</code></td><td><code>"SFMono-Regular", monospace</code></td><td>Code font stack</td></tr>
+            <tr><td><code>--cp-shadow</code></td><td><code>0 18px 40px ...</code></td><td>Outer box shadow</td></tr>
+            <tr><td><code>--cp-split</code></td><td><code>48%</code></td><td>Editor/preview split position</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Syntax Highlighting Tokens</h3>
+        <table class="api-table">
+          <thead>
+            <tr><th>Property</th><th>Light</th><th>Dark</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--cp-token-keyword</code></td><td><code>#9a3412</code></td><td><code>#ff7b72</code></td><td>Keywords (<code>const</code>, <code>if</code>, etc.)</td></tr>
+            <tr><td><code>--cp-token-string</code></td><td><code>#166534</code></td><td><code>#7ee787</code></td><td>String literals</td></tr>
+            <tr><td><code>--cp-token-number</code></td><td><code>#1d4ed8</code></td><td><code>#79c0ff</code></td><td>Numeric literals</td></tr>
+            <tr><td><code>--cp-token-comment</code></td><td><code>#64748b</code></td><td><code>#8b949e</code></td><td>Comments</td></tr>
+            <tr><td><code>--cp-token-variable</code></td><td><code>#0f172a</code></td><td><code>#e6edf3</code></td><td>Variable names</td></tr>
+            <tr><td><code>--cp-token-type</code></td><td><code>#7c3aed</code></td><td><code>#d2a8ff</code></td><td>Type names</td></tr>
+            <tr><td><code>--cp-token-tag</code></td><td><code>#be123c</code></td><td><code>#7ee787</code></td><td>HTML tag names</td></tr>
+            <tr><td><code>--cp-token-attribute</code></td><td><code>#0369a1</code></td><td><code>#79c0ff</code></td><td>HTML attributes</td></tr>
+            <tr><td><code>--cp-token-property</code></td><td><code>#155e75</code></td><td><code>#a5d6ff</code></td><td>CSS properties</td></tr>
+            <tr><td><code>--cp-token-function</code></td><td><code>#7c2d12</code></td><td><code>#d2a8ff</code></td><td>Function names</td></tr>
+            <tr><td><code>--cp-token-meta</code></td><td><code>#6d28d9</code></td><td><code>#ffa657</code></td><td>Meta / directives</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Keyboard Shortcuts -->
+      <section id="keyboard">
+        <h2>Keyboard Shortcuts</h2>
+        <table class="api-table">
+          <thead>
+            <tr><th>Key</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><kbd>Arrow Left</kbd> / <kbd>Arrow Up</kbd></td><td>Move the editor/preview divider left/up (hold <kbd>Shift</kbd> for larger steps)</td></tr>
+            <tr><td><kbd>Arrow Right</kbd> / <kbd>Arrow Down</kbd></td><td>Move the editor/preview divider right/down</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Related Components -->
+      <section>
+        <h2>Related Components</h2>
+        <div class="related-grid">
+          <a class="related-card" href="https://profpowell.github.io/pdf-viewer/">
+            <strong>&lt;pdf-viewer&gt;</strong>
+            PDF document viewer with navigation, zoom, search, and thumbnails
+          </a>
+          <a class="related-card" href="https://profpowell.github.io/vanilla-breeze/">
+            <strong>Vanilla Breeze</strong>
+            Utility-first design tokens and theme system for web components
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      MIT License &middot; <a href="https://github.com/ProfPowell/code-playground">View on GitHub</a>
+    </footer>
+
+    <script>
+      const toggle = document.getElementById('theme-toggle');
+      const saved = localStorage.getItem('docs-theme');
+      if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark');
+      }
+      toggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('docs-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      });
+    </script>
+  </body>
+</html>
