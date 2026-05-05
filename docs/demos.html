@@ -1,36 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze/dist/cdn/icons">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;code-playground&gt; Demos</title>
+    <meta name="description" content="Interactive demos for the code-playground web component.">
+
+    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.css">
+    <script type="module" src="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.js"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block"></script>
+
     <link rel="stylesheet" href="./styles.css">
     <script type="module" src="../src/code-playground.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <nav>
-        <a class="nav-brand" href="index.html">&lt;code-playground&gt;</a>
-        <div class="nav-links">
+    <header class="site" data-sticky>
+      <nav data-layout="cluster" data-layout-justify="space-between" aria-label="Primary">
+        <a class="brand" href="index.html"><strong>&lt;code-playground&gt;</strong></a>
+        <nav data-layout="cluster" data-layout-gap="m" aria-label="Sections">
           <a href="index.html">Home</a>
-          <a href="demos.html" class="active">Demos</a>
+          <a href="demos.html" aria-current="page">Demos</a>
           <a href="api.html">API</a>
           <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
-          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#x1f313;</button>
-        </div>
+          <theme-picker compact></theme-picker>
+        </nav>
       </nav>
     </header>
 
-    <main>
-      <section class="hero">
+    <main data-layout="stack" data-layout-gap="xl">
+      <section class="hero" data-layout="stack" data-layout-gap="s">
         <h1>Interactive Demos</h1>
-        <p class="tagline">Explore all the features of the <code>&lt;code-playground&gt;</code> component</p>
+        <p>Explore all the features of the <code>&lt;code-playground&gt;</code> component.</p>
       </section>
 
-      <!-- Auto Run -->
-      <section id="auto-run" class="demo-section">
+      <section id="auto-run" data-layout="stack" data-layout-gap="m">
         <h2>Auto Run</h2>
-        <p class="demo-description">The default mode. Edits are debounced and the preview rebuilds automatically after a short delay.</p>
+        <p>The default mode. Edits are debounced and the preview rebuilds automatically after a short delay.</p>
         <code-playground persist="demo-auto" title="Auto run demo">
           <textarea slot="html"><div class="swatch"></div>
 <p>Auto mode updates after a short debounce.</p></textarea>
@@ -48,19 +53,16 @@
 }</textarea>
           <textarea slot="js">console.log('Auto demo ready');</textarea>
         </code-playground>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground&gt;
+        <code-block language="html">&lt;code-playground&gt;
   &lt;textarea slot="html"&gt;...&lt;/textarea&gt;
   &lt;textarea slot="css"&gt;...&lt;/textarea&gt;
   &lt;textarea slot="js"&gt;...&lt;/textarea&gt;
-&lt;/code-playground&gt;</code></pre>
-        </div>
+&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- Manual Run -->
-      <section id="manual-run" class="demo-section">
+      <section id="manual-run" data-layout="stack" data-layout-gap="m">
         <h2>Manual Run</h2>
-        <p class="demo-description">Set <code>run-mode="manual"</code> to require an explicit click of the Run button. Useful for scripts with side effects.</p>
+        <p>Set <code>run-mode="manual"</code> to require an explicit click of the Run button. Useful for scripts with side effects.</p>
         <code-playground run-mode="manual" title="Manual run demo">
           <textarea slot="html"><h1>Manual Mode</h1>
 <p>Edit the code, then press Run.</p></textarea>
@@ -73,15 +75,12 @@ h1 { margin-top: 0; }</textarea>
           <textarea slot="js">console.warn('Manual mode ready');
 console.log('Edit me, then click Run.');</textarea>
         </code-playground>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground run-mode="manual"&gt;...&lt;/code-playground&gt;</code></pre>
-        </div>
+        <code-block language="html">&lt;code-playground run-mode="manual"&gt;...&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- Console -->
-      <section id="console" class="demo-section">
+      <section id="console" data-layout="stack" data-layout-gap="m">
         <h2>Console Output</h2>
-        <p class="demo-description">
+        <p>
           The runtime console bridges <code>log</code>, <code>info</code>, <code>warn</code>,
           <code>error</code>, and <code>debug</code> from the sandboxed iframe. Filter by level,
           search by text, collapse repeated messages, and copy output.
@@ -115,10 +114,9 @@ button {
         </code-playground>
       </section>
 
-      <!-- Bottom Preview -->
-      <section id="bottom-preview" class="demo-section">
+      <section id="bottom-preview" data-layout="stack" data-layout-gap="m">
         <h2>Bottom Preview</h2>
-        <p class="demo-description">Use <code>preview-position="bottom"</code> to stack the preview below the editor instead of beside it.</p>
+        <p>Use <code>preview-position="bottom"</code> to stack the preview below the editor instead of beside it.</p>
         <code-playground preview-position="bottom" title="Bottom preview demo">
           <textarea slot="html"><h1>Stacked Layout</h1>
 <p>Preview is below the editor.</p></textarea>
@@ -131,15 +129,12 @@ button {
 h1 { color: #854d0e; margin-top: 0; }</textarea>
           <textarea slot="js">console.log('Bottom layout');</textarea>
         </code-playground>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground preview-position="bottom"&gt;...&lt;/code-playground&gt;</code></pre>
-        </div>
+        <code-block language="html">&lt;code-playground preview-position="bottom"&gt;...&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- Theme / Dark Mode -->
-      <section id="theme" class="demo-section">
+      <section id="theme" data-layout="stack" data-layout-gap="m">
         <h2>Dark Mode</h2>
-        <p class="demo-description">
+        <p>
           Set <code>mode="dark"</code> to force dark theme, or <code>mode="auto"</code> (default) to follow the page.
           Add <code>inherit-theme</code> to propagate <code>data-mode</code> and <code>data-theme</code> into the preview iframe.
         </p>
@@ -156,15 +151,12 @@ h1 { color: #854d0e; margin-top: 0; }</textarea>
 h1 { margin-top: 0; }</textarea>
           <textarea slot="js">console.log('Dark mode active');</textarea>
         </code-playground>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground mode="dark" inherit-theme&gt;...&lt;/code-playground&gt;</code></pre>
-        </div>
+        <code-block language="html">&lt;code-playground mode="dark" inherit-theme&gt;...&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- Hidden Console -->
-      <section id="hidden-console" class="demo-section">
+      <section id="hidden-console" data-layout="stack" data-layout-gap="m">
         <h2>Hidden Console</h2>
-        <p class="demo-description">Set <code>show-console="false"</code> to hide the console panel entirely.</p>
+        <p>Set <code>show-console="false"</code> to hide the console panel entirely.</p>
         <code-playground show-console="false" title="No console demo">
           <textarea slot="html"><h1>No Console</h1>
 <p>The console panel is hidden for a cleaner layout.</p></textarea>
@@ -176,15 +168,12 @@ h1 { margin-top: 0; }</textarea>
 h1 { color: #16a34a; margin-top: 0; }</textarea>
           <textarea slot="js">console.log('This runs but is not visible');</textarea>
         </code-playground>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground show-console="false"&gt;...&lt;/code-playground&gt;</code></pre>
-        </div>
+        <code-block language="html">&lt;code-playground show-console="false"&gt;...&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- Persist -->
-      <section id="persist" class="demo-section">
+      <section id="persist" data-layout="stack" data-layout-gap="m">
         <h2>Persistence</h2>
-        <p class="demo-description">
+        <p>
           Set the <code>persist</code> attribute to a unique key. The component saves source, active tab,
           and split position to <code>localStorage</code>. Edits survive page reloads.
         </p>
@@ -199,33 +188,27 @@ h1 { color: #16a34a; margin-top: 0; }</textarea>
 h1 { margin-top: 0; }</textarea>
           <textarea slot="js">console.log('Persisted state loaded');</textarea>
         </code-playground>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground persist="my-unique-key"&gt;...&lt;/code-playground&gt;</code></pre>
-        </div>
+        <code-block language="html">&lt;code-playground persist="my-unique-key"&gt;...&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- External Sources -->
-      <section id="external-sources" class="demo-section">
+      <section id="external-sources" data-layout="stack" data-layout-gap="m">
         <h2>External Sources</h2>
-        <p class="demo-description">
+        <p>
           Load panels from external files with <code>html-src</code>, <code>css-src</code>,
           <code>js-src</code>, and <code>head-src</code> attributes. Great for embedding
           exercises sourced from separate files.
         </p>
-        <div class="demo-code">
-          <pre><code>&lt;code-playground
+        <code-block language="html">&lt;code-playground
   html-src="./exercises/ex1.html"
   css-src="./exercises/ex1.css"
   js-src="./exercises/ex1.js"
   head-src="./exercises/ex1-head.html"&gt;
-&lt;/code-playground&gt;</code></pre>
-        </div>
+&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- CodePen Export -->
-      <section id="codepen" class="demo-section">
+      <section id="codepen" data-layout="stack" data-layout-gap="m">
         <h2>CodePen Export</h2>
-        <p class="demo-description">
+        <p>
           Every playground has a CodePen button in its toolbar. Click it to open
           the current HTML, CSS, and JS in a new CodePen pen.
         </p>
@@ -243,36 +226,31 @@ h1 { color: #4f46e5; margin-top: 0; }</textarea>
         </code-playground>
       </section>
 
-      <!-- Related Components -->
       <section>
         <h2>Related Components</h2>
         <div class="related-grid">
-          <a class="related-card" href="https://profpowell.github.io/pdf-viewer/">
+          <a href="https://profpowell.github.io/pdf-viewer/">
             <strong>&lt;pdf-viewer&gt;</strong>
-            PDF document viewer with navigation, zoom, search, and thumbnails
+            <span>PDF document viewer with navigation, zoom, search, and thumbnails.</span>
           </a>
-          <a class="related-card" href="https://profpowell.github.io/vanilla-breeze/">
+          <a href="https://profpowell.github.io/browser-window/">
+            <strong>&lt;browser-window&gt;</strong>
+            <span>Safari-style browser window frames for demos and tutorials.</span>
+          </a>
+          <a href="https://profpowell.github.io/code-block/">
+            <strong>&lt;code-block&gt;</strong>
+            <span>Syntax-highlighted code blocks with copy, line numbers, and themes.</span>
+          </a>
+          <a href="https://vanilla-breeze.com/">
             <strong>Vanilla Breeze</strong>
-            Utility-first design tokens and theme system for web components
+            <span>A layered HTML component system with design tokens and themes.</span>
           </a>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site">
       MIT License &middot; <a href="https://github.com/ProfPowell/code-playground">View on GitHub</a>
     </footer>
-
-    <script>
-      const toggle = document.getElementById('theme-toggle');
-      const saved = localStorage.getItem('docs-theme');
-      if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.body.classList.add('dark');
-      }
-      toggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        localStorage.setItem('docs-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-      });
-    </script>
   </body>
 </html>

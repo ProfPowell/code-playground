@@ -1,340 +1,153 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze/dist/cdn/icons">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;code-playground&gt; API</title>
+    <meta name="description" content="API reference for the code-playground web component: attributes, properties, methods, events, slots, and styling hooks.">
+
+    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.css">
+    <script type="module" src="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.js"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block"></script>
+
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <header class="site-header">
-      <nav>
-        <a class="nav-brand" href="index.html">&lt;code-playground&gt;</a>
-        <div class="nav-links">
+    <header class="site" data-sticky>
+      <nav data-layout="cluster" data-layout-justify="space-between" aria-label="Primary">
+        <a class="brand" href="index.html"><strong>&lt;code-playground&gt;</strong></a>
+        <nav data-layout="cluster" data-layout-gap="m" aria-label="Sections">
           <a href="index.html">Home</a>
           <a href="demos.html">Demos</a>
-          <a href="api.html" class="active">API</a>
+          <a href="api.html" aria-current="page">API</a>
           <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
-          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#x1f313;</button>
-        </div>
+          <theme-picker compact></theme-picker>
+        </nav>
       </nav>
     </header>
 
-    <main>
-      <section class="hero">
+    <main data-layout="stack" data-layout-gap="xl">
+      <section class="hero" data-layout="stack" data-layout-gap="s">
         <h1>API Reference</h1>
-        <p class="tagline">Attributes, properties, methods, events, slots, and styling hooks for <code>&lt;code-playground&gt;</code></p>
+        <p>Attributes, properties, methods, events, slots, and styling hooks for <code>&lt;code-playground&gt;</code>.</p>
       </section>
 
-      <!-- Attributes -->
       <section id="attributes">
         <h2>Attributes</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Attribute</th><th>Type</th><th>Default</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>mode</code></td>
-              <td><code>string</code></td>
-              <td><code>"auto"</code></td>
-              <td>Color mode for the shell. <code>"auto"</code> follows page signals, or set <code>"light"</code> / <code>"dark"</code>.</td>
-            </tr>
-            <tr>
-              <td><code>run-mode</code></td>
-              <td><code>string</code></td>
-              <td><code>"auto"</code></td>
-              <td><code>"auto"</code> for debounced live preview or <code>"manual"</code> for explicit runs.</td>
-            </tr>
-            <tr>
-              <td><code>debounce</code></td>
-              <td><code>number</code></td>
-              <td><code>300</code></td>
-              <td>Auto-run delay in milliseconds.</td>
-            </tr>
-            <tr>
-              <td><code>preview-position</code></td>
-              <td><code>string</code></td>
-              <td><code>"right"</code></td>
-              <td>Position of the preview pane: <code>"right"</code> or <code>"bottom"</code>.</td>
-            </tr>
-            <tr>
-              <td><code>html-src</code></td>
-              <td><code>string</code></td>
-              <td>&mdash;</td>
-              <td>URL of an external HTML file to load into the HTML panel.</td>
-            </tr>
-            <tr>
-              <td><code>css-src</code></td>
-              <td><code>string</code></td>
-              <td>&mdash;</td>
-              <td>URL of an external CSS file to load into the CSS panel.</td>
-            </tr>
-            <tr>
-              <td><code>js-src</code></td>
-              <td><code>string</code></td>
-              <td>&mdash;</td>
-              <td>URL of an external JavaScript file to load into the JS panel.</td>
-            </tr>
-            <tr>
-              <td><code>head-src</code></td>
-              <td><code>string</code></td>
-              <td>&mdash;</td>
-              <td>URL of a preview-only head fragment (e.g. <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code>, extra <code>&lt;meta&gt;</code> tags).</td>
-            </tr>
-            <tr>
-              <td><code>persist</code></td>
-              <td><code>string</code></td>
-              <td>&mdash;</td>
-              <td>localStorage key used for saving source, active tab, and split position.</td>
-            </tr>
-            <tr>
-              <td><code>inherit-theme</code></td>
-              <td><code>boolean</code></td>
-              <td><code>false</code></td>
-              <td>Copies page <code>data-mode</code> and <code>data-theme</code> to the preview document.</td>
-            </tr>
-            <tr>
-              <td><code>show-console</code></td>
-              <td><code>boolean</code></td>
-              <td><code>true</code></td>
-              <td>Set to <code>"false"</code> to hide the console panel.</td>
-            </tr>
+            <tr><td><code>mode</code></td><td><code>string</code></td><td><code>"auto"</code></td><td>Color mode for the shell. <code>"auto"</code> follows page signals, or set <code>"light"</code> / <code>"dark"</code>.</td></tr>
+            <tr><td><code>run-mode</code></td><td><code>string</code></td><td><code>"auto"</code></td><td><code>"auto"</code> for debounced live preview or <code>"manual"</code> for explicit runs.</td></tr>
+            <tr><td><code>debounce</code></td><td><code>number</code></td><td><code>300</code></td><td>Auto-run delay in milliseconds.</td></tr>
+            <tr><td><code>preview-position</code></td><td><code>string</code></td><td><code>"right"</code></td><td>Position of the preview pane: <code>"right"</code> or <code>"bottom"</code>.</td></tr>
+            <tr><td><code>html-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of an external HTML file to load into the HTML panel.</td></tr>
+            <tr><td><code>css-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of an external CSS file to load into the CSS panel.</td></tr>
+            <tr><td><code>js-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of an external JavaScript file to load into the JS panel.</td></tr>
+            <tr><td><code>head-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of a preview-only head fragment (e.g. <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code>, extra <code>&lt;meta&gt;</code> tags).</td></tr>
+            <tr><td><code>persist</code></td><td><code>string</code></td><td>&mdash;</td><td>localStorage key used for saving source, active tab, and split position.</td></tr>
+            <tr><td><code>inherit-theme</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Copies page <code>data-mode</code> and <code>data-theme</code> to the preview document.</td></tr>
+            <tr><td><code>show-console</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Set to <code>"false"</code> to hide the console panel.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Properties -->
       <section id="properties">
         <h2>Properties</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Property</th><th>Type</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>value</code></td>
-              <td><code>{ html, css, js, head }</code></td>
-              <td>Get or set the current source payload.</td>
-            </tr>
-            <tr>
-              <td><code>mode</code></td>
-              <td><code>string</code></td>
-              <td>Get or set the color mode.</td>
-            </tr>
-            <tr>
-              <td><code>runMode</code></td>
-              <td><code>string</code></td>
-              <td>Get or set the run mode (<code>"auto"</code> or <code>"manual"</code>).</td>
-            </tr>
-            <tr>
-              <td><code>previewPosition</code></td>
-              <td><code>string</code></td>
-              <td>Get or set the preview position (<code>"right"</code> or <code>"bottom"</code>).</td>
-            </tr>
-            <tr>
-              <td><code>debounce</code></td>
-              <td><code>number</code></td>
-              <td>Get or set the debounce delay.</td>
-            </tr>
-            <tr>
-              <td><code>persistKey</code></td>
-              <td><code>string</code></td>
-              <td>Read-only. The current localStorage key.</td>
-            </tr>
-            <tr>
-              <td><code>inheritTheme</code></td>
-              <td><code>boolean</code></td>
-              <td>Read-only. Whether theme inheritance is active.</td>
-            </tr>
-            <tr>
-              <td><code>showConsole</code></td>
-              <td><code>boolean</code></td>
-              <td>Read-only. Whether the console panel is visible.</td>
-            </tr>
-            <tr>
-              <td><code>sourceUrls</code></td>
-              <td><code>object</code></td>
-              <td>Read-only. The configured <code>*-src</code> URLs.</td>
-            </tr>
+            <tr><td><code>value</code></td><td><code>{ html, css, js, head }</code></td><td>Get or set the current source payload.</td></tr>
+            <tr><td><code>mode</code></td><td><code>string</code></td><td>Get or set the color mode.</td></tr>
+            <tr><td><code>runMode</code></td><td><code>string</code></td><td>Get or set the run mode (<code>"auto"</code> or <code>"manual"</code>).</td></tr>
+            <tr><td><code>previewPosition</code></td><td><code>string</code></td><td>Get or set the preview position (<code>"right"</code> or <code>"bottom"</code>).</td></tr>
+            <tr><td><code>debounce</code></td><td><code>number</code></td><td>Get or set the debounce delay.</td></tr>
+            <tr><td><code>persistKey</code></td><td><code>string</code></td><td>Read-only. The current localStorage key.</td></tr>
+            <tr><td><code>inheritTheme</code></td><td><code>boolean</code></td><td>Read-only. Whether theme inheritance is active.</td></tr>
+            <tr><td><code>showConsole</code></td><td><code>boolean</code></td><td>Read-only. Whether the console panel is visible.</td></tr>
+            <tr><td><code>sourceUrls</code></td><td><code>object</code></td><td>Read-only. The configured <code>*-src</code> URLs.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Methods -->
       <section id="methods">
         <h2>Methods</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Method</th><th>Returns</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>getValue()</code></td>
-              <td><code>{ html, css, js, head }</code></td>
-              <td>Returns the current source payload.</td>
-            </tr>
-            <tr>
-              <td><code>setValue(value)</code></td>
-              <td><code>void</code></td>
-              <td>Updates one or more source panels programmatically.</td>
-            </tr>
-            <tr>
-              <td><code>run()</code></td>
-              <td><code>void</code></td>
-              <td>Rebuilds the preview iframe immediately.</td>
-            </tr>
-            <tr>
-              <td><code>softRun()</code></td>
-              <td><code>void</code></td>
-              <td>Re-executes the JS panel inside the existing iframe without rebuilding the document.</td>
-            </tr>
-            <tr>
-              <td><code>reset()</code></td>
-              <td><code>void</code></td>
-              <td>Restores the original authored source values.</td>
-            </tr>
-            <tr>
-              <td><code>reloadSources()</code></td>
-              <td><code>Promise&lt;void&gt;</code></td>
-              <td>Refetches any configured <code>*-src</code> files and replaces editor content.</td>
-            </tr>
-            <tr>
-              <td><code>copy(type?)</code></td>
-              <td><code>Promise&lt;void&gt;</code></td>
-              <td>Copies the requested source panel (<code>"html"</code>, <code>"css"</code>, or <code>"js"</code>) to the clipboard. Defaults to the active tab.</td>
-            </tr>
-            <tr>
-              <td><code>copyConsole()</code></td>
-              <td><code>Promise&lt;void&gt;</code></td>
-              <td>Copies visible console rows, respecting the active filter, search, and repeat collapsing.</td>
-            </tr>
-            <tr>
-              <td><code>downloadHTML()</code></td>
-              <td><code>void</code></td>
-              <td>Downloads a standalone HTML document assembled from the current state.</td>
-            </tr>
-            <tr>
-              <td><code>openInCodePen()</code></td>
-              <td><code>void</code></td>
-              <td>Opens the current payload in a new CodePen pen.</td>
-            </tr>
-            <tr>
-              <td><code>clearConsole()</code></td>
-              <td><code>void</code></td>
-              <td>Clears captured console output.</td>
-            </tr>
+            <tr><td><code>getValue()</code></td><td><code>{ html, css, js, head }</code></td><td>Returns the current source payload.</td></tr>
+            <tr><td><code>setValue(value)</code></td><td><code>void</code></td><td>Updates one or more source panels programmatically.</td></tr>
+            <tr><td><code>run()</code></td><td><code>void</code></td><td>Rebuilds the preview iframe immediately.</td></tr>
+            <tr><td><code>softRun()</code></td><td><code>void</code></td><td>Re-executes the JS panel inside the existing iframe without rebuilding the document.</td></tr>
+            <tr><td><code>reset()</code></td><td><code>void</code></td><td>Restores the original authored source values.</td></tr>
+            <tr><td><code>reloadSources()</code></td><td><code>Promise&lt;void&gt;</code></td><td>Refetches any configured <code>*-src</code> files and replaces editor content.</td></tr>
+            <tr><td><code>copy(type?)</code></td><td><code>Promise&lt;void&gt;</code></td><td>Copies the requested source panel (<code>"html"</code>, <code>"css"</code>, or <code>"js"</code>) to the clipboard. Defaults to the active tab.</td></tr>
+            <tr><td><code>copyConsole()</code></td><td><code>Promise&lt;void&gt;</code></td><td>Copies visible console rows, respecting the active filter, search, and repeat collapsing.</td></tr>
+            <tr><td><code>downloadHTML()</code></td><td><code>void</code></td><td>Downloads a standalone HTML document assembled from the current state.</td></tr>
+            <tr><td><code>openInCodePen()</code></td><td><code>void</code></td><td>Opens the current payload in a new CodePen pen.</td></tr>
+            <tr><td><code>clearConsole()</code></td><td><code>void</code></td><td>Clears captured console output.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Events -->
       <section id="events">
         <h2>Events</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Event</th><th>Detail</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>code-playground:change</code></td>
-              <td><code>{ type, value }</code></td>
-              <td>Fires when an editor value changes.</td>
-            </tr>
-            <tr>
-              <td><code>code-playground:run</code></td>
-              <td><code>{ html, css, js, head }</code></td>
-              <td>Fires after the preview document is rebuilt.</td>
-            </tr>
-            <tr>
-              <td><code>code-playground:ready</code></td>
-              <td>&mdash;</td>
-              <td>Fires when the iframe bootstrap reports ready.</td>
-            </tr>
-            <tr>
-              <td><code>code-playground:console</code></td>
-              <td><code>{ level, args }</code></td>
-              <td>Fires for bridged console calls from the iframe.</td>
-            </tr>
-            <tr>
-              <td><code>code-playground:error</code></td>
-              <td><code>{ level, args }</code></td>
-              <td>Fires for bridged runtime errors and unhandled rejections.</td>
-            </tr>
-            <tr>
-              <td><code>code-playground:sources-loaded</code></td>
-              <td><code>{ loaded }</code></td>
-              <td>Fires after one or more external source files load successfully.</td>
-            </tr>
-            <tr>
-              <td><code>code-playground:source-error</code></td>
-              <td><code>{ type, url, error }</code></td>
-              <td>Fires when a configured external source file fails to load.</td>
-            </tr>
+            <tr><td><code>code-playground:change</code></td><td><code>{ type, value }</code></td><td>Fires when an editor value changes.</td></tr>
+            <tr><td><code>code-playground:run</code></td><td><code>{ html, css, js, head }</code></td><td>Fires after the preview document is rebuilt.</td></tr>
+            <tr><td><code>code-playground:ready</code></td><td>&mdash;</td><td>Fires when the iframe bootstrap reports ready.</td></tr>
+            <tr><td><code>code-playground:console</code></td><td><code>{ level, args }</code></td><td>Fires for bridged console calls from the iframe.</td></tr>
+            <tr><td><code>code-playground:error</code></td><td><code>{ level, args }</code></td><td>Fires for bridged runtime errors and unhandled rejections.</td></tr>
+            <tr><td><code>code-playground:sources-loaded</code></td><td><code>{ loaded }</code></td><td>Fires after one or more external source files load successfully.</td></tr>
+            <tr><td><code>code-playground:source-error</code></td><td><code>{ type, url, error }</code></td><td>Fires when a configured external source file fails to load.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- Slots -->
       <section id="slots">
         <h2>Slots</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Slot</th><th>Expected Element</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>html</code></td>
-              <td><code>&lt;textarea&gt;</code></td>
-              <td>Initial HTML source content.</td>
-            </tr>
-            <tr>
-              <td><code>css</code></td>
-              <td><code>&lt;textarea&gt;</code></td>
-              <td>Initial CSS source content.</td>
-            </tr>
-            <tr>
-              <td><code>js</code></td>
-              <td><code>&lt;textarea&gt;</code></td>
-              <td>Initial JavaScript source content.</td>
-            </tr>
+            <tr><td><code>html</code></td><td><code>&lt;textarea&gt;</code></td><td>Initial HTML source content.</td></tr>
+            <tr><td><code>css</code></td><td><code>&lt;textarea&gt;</code></td><td>Initial CSS source content.</td></tr>
+            <tr><td><code>js</code></td><td><code>&lt;textarea&gt;</code></td><td>Initial JavaScript source content.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- CSS Parts -->
       <section id="css-parts">
         <h2>CSS Parts</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Part</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>::part(toolbar)</code></td>
-              <td>File tabs, status indicators, and primary action buttons.</td>
-            </tr>
-            <tr>
-              <td><code>::part(editor-panel)</code></td>
-              <td>Code editor workspace containing the active tab's editor.</td>
-            </tr>
-            <tr>
-              <td><code>::part(preview-panel)</code></td>
-              <td>Preview iframe panel.</td>
-            </tr>
-            <tr>
-              <td><code>::part(console-panel)</code></td>
-              <td>Console output panel with filters and search.</td>
-            </tr>
+            <tr><td><code>::part(toolbar)</code></td><td>File tabs, status indicators, and primary action buttons.</td></tr>
+            <tr><td><code>::part(editor-panel)</code></td><td>Code editor workspace containing the active tab's editor.</td></tr>
+            <tr><td><code>::part(preview-panel)</code></td><td>Preview iframe panel.</td></tr>
+            <tr><td><code>::part(console-panel)</code></td><td>Console output panel with filters and search.</td></tr>
           </tbody>
         </table>
       </section>
 
-      <!-- CSS Custom Properties -->
-      <section id="css-properties">
+      <section id="css-properties" data-layout="stack" data-layout-gap="m">
         <h2>CSS Custom Properties</h2>
         <p>Override these properties on the <code>code-playground</code> selector to customize the look. Each property falls back to a Vanilla Breeze design token when available.</p>
-        <table class="api-table">
+
+        <table>
           <thead>
             <tr><th>Property</th><th>Default (light)</th><th>Description</th></tr>
           </thead>
@@ -358,7 +171,7 @@
         </table>
 
         <h3>Syntax Highlighting Tokens</h3>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Property</th><th>Light</th><th>Dark</th><th>Description</th></tr>
           </thead>
@@ -378,10 +191,9 @@
         </table>
       </section>
 
-      <!-- Keyboard Shortcuts -->
       <section id="keyboard">
         <h2>Keyboard Shortcuts</h2>
-        <table class="api-table">
+        <table>
           <thead>
             <tr><th>Key</th><th>Action</th></tr>
           </thead>
@@ -392,36 +204,31 @@
         </table>
       </section>
 
-      <!-- Related Components -->
       <section>
         <h2>Related Components</h2>
         <div class="related-grid">
-          <a class="related-card" href="https://profpowell.github.io/pdf-viewer/">
+          <a href="https://profpowell.github.io/pdf-viewer/">
             <strong>&lt;pdf-viewer&gt;</strong>
-            PDF document viewer with navigation, zoom, search, and thumbnails
+            <span>PDF document viewer with navigation, zoom, search, and thumbnails.</span>
           </a>
-          <a class="related-card" href="https://profpowell.github.io/vanilla-breeze/">
+          <a href="https://profpowell.github.io/browser-window/">
+            <strong>&lt;browser-window&gt;</strong>
+            <span>Safari-style browser window frames for demos and tutorials.</span>
+          </a>
+          <a href="https://profpowell.github.io/code-block/">
+            <strong>&lt;code-block&gt;</strong>
+            <span>Syntax-highlighted code blocks with copy, line numbers, and themes.</span>
+          </a>
+          <a href="https://vanilla-breeze.com/">
             <strong>Vanilla Breeze</strong>
-            Utility-first design tokens and theme system for web components
+            <span>A layered HTML component system with design tokens and themes.</span>
           </a>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site">
       MIT License &middot; <a href="https://github.com/ProfPowell/code-playground">View on GitHub</a>
     </footer>
-
-    <script>
-      const toggle = document.getElementById('theme-toggle');
-      const saved = localStorage.getItem('docs-theme');
-      if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.body.classList.add('dark');
-      }
-      toggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        localStorage.setItem('docs-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-      });
-    </script>
   </body>
 </html>

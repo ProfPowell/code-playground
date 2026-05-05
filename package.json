@@ -71,8 +71,10 @@
     "@custom-elements-manifest/analyzer": "^0.11.0",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
+    "@profpowell/code-block": "^2.8.0",
     "eslint": "^9.39.2",
     "prettier": "^3.8.0",
+    "vanilla-breeze": "^0.1.3",
     "vite": "^7.3.1"
   }
 }

@@ -1,43 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze/dist/cdn/icons">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;code-playground&gt;</title>
+    <meta name="description" content="A standalone web component for live HTML, CSS, and JavaScript editing with sandboxed preview, runtime console, and CodePen export.">
+
+    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.css">
+    <script type="module" src="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.js"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block"></script>
+
     <link rel="stylesheet" href="./styles.css">
     <script type="module" src="../src/code-playground.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <nav>
-        <a class="nav-brand" href="index.html">&lt;code-playground&gt;</a>
-        <div class="nav-links">
-          <a href="index.html" class="active">Home</a>
+    <header class="site" data-sticky>
+      <nav data-layout="cluster" data-layout-justify="space-between" aria-label="Primary">
+        <a class="brand" href="index.html"><strong>&lt;code-playground&gt;</strong></a>
+        <nav data-layout="cluster" data-layout-gap="m" aria-label="Sections">
+          <a href="index.html" aria-current="page">Home</a>
           <a href="demos.html">Demos</a>
           <a href="api.html">API</a>
           <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
-          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">&#x1f313;</button>
-        </div>
+          <theme-picker compact></theme-picker>
+        </nav>
       </nav>
     </header>
 
-    <main>
-      <!-- Hero -->
-      <section class="hero">
+    <main data-layout="stack" data-layout-gap="xl">
+      <section class="hero" data-layout="stack" data-layout-gap="m">
         <h1>&lt;code-playground&gt;</h1>
-        <p class="tagline">
-          A standalone web component for live HTML, CSS, and JavaScript editing
-          with sandboxed preview, runtime console, and CodePen export.
-        </p>
+        <p>A standalone web component for live HTML, CSS, and JavaScript editing with sandboxed preview, runtime console, and CodePen export.</p>
 
-        <div class="hero-demo">
-          <code-playground persist="docs-hero" title="Live demo">
-            <textarea slot="html"><section class="card">
+        <code-playground persist="docs-hero" title="Live demo">
+          <textarea slot="html"><section class="card">
   <h1>Hello playground</h1>
   <p>Edit the source and watch the preview update.</p>
   <button id="ping">Ping</button>
 </section></textarea>
-            <textarea slot="css">:root {
+          <textarea slot="css">:root {
   font-family: system-ui, sans-serif;
   color-scheme: light dark;
 }
@@ -62,81 +63,78 @@ button {
   color: white;
   cursor: pointer;
 }</textarea>
-            <textarea slot="js">document.getElementById('ping')
+          <textarea slot="js">document.getElementById('ping')
   ?.addEventListener('click', () => {
     console.info(
       'Clicked at',
       new Date().toLocaleTimeString()
     );
   });</textarea>
-          </code-playground>
-        </div>
+        </code-playground>
 
-        <div class="hero-actions">
-          <a class="btn primary" href="demos.html">View Demos</a>
-          <a class="btn secondary" href="api.html">API Documentation</a>
-        </div>
+        <nav data-layout="cluster" data-layout-justify="center" data-layout-gap="s">
+          <a href="demos.html"><button>View Demos</button></a>
+          <a href="api.html"><button class="secondary">API Documentation</button></a>
+        </nav>
       </section>
 
-      <!-- Features -->
       <section>
         <h2>Features</h2>
         <div class="feature-grid">
-          <a class="feature-card" href="demos.html#auto-run">
+          <a href="demos.html#auto-run">
             <h3>Live Preview</h3>
-            <p>Debounced auto-run updates the sandboxed iframe as you type</p>
+            <p>Debounced auto-run updates the sandboxed iframe as you type.</p>
           </a>
-          <a class="feature-card" href="demos.html#manual-run">
+          <a href="demos.html#manual-run">
             <h3>Manual Run</h3>
-            <p>Opt into explicit run mode for scripts that shouldn't auto-execute</p>
+            <p>Opt into explicit run mode for scripts that shouldn't auto-execute.</p>
           </a>
-          <a class="feature-card" href="demos.html#console">
+          <a href="demos.html#console">
             <h3>Runtime Console</h3>
-            <p>Bridged console with log levels, search, repeat collapsing, and origin tracking</p>
+            <p>Bridged console with log levels, search, repeat collapsing, and origin tracking.</p>
           </a>
-          <a class="feature-card" href="demos.html#external-sources">
+          <a href="demos.html#external-sources">
             <h3>External Sources</h3>
-            <p>Load HTML, CSS, JS, and head fragments from external files</p>
+            <p>Load HTML, CSS, JS, and head fragments from external files.</p>
           </a>
-          <a class="feature-card" href="demos.html#theme">
+          <a href="demos.html#theme">
             <h3>Dark Mode</h3>
-            <p>Auto-detects page theme or set explicitly via the mode attribute</p>
+            <p>Auto-detects page theme or set explicitly via the mode attribute.</p>
           </a>
-          <a class="feature-card" href="demos.html#codepen">
+          <a href="demos.html#codepen">
             <h3>CodePen Export</h3>
-            <p>One-click export opens the current playground state in CodePen</p>
+            <p>One-click export opens the current playground state in CodePen.</p>
           </a>
-          <a class="feature-card" href="api.html#css-parts">
+          <a href="api.html#css-properties">
             <h3>Fully Themeable</h3>
-            <p>CSS custom properties and shadow parts for deep customization</p>
+            <p>CSS custom properties and shadow parts for deep customization.</p>
           </a>
-          <a class="feature-card" href="demos.html#persist">
+          <a href="demos.html#persist">
             <h3>Persistence</h3>
-            <p>localStorage persistence for source, active tab, and split position</p>
+            <p>localStorage persistence for source, active tab, and split position.</p>
           </a>
         </div>
       </section>
 
-      <!-- Quick Start -->
-      <section>
+      <section data-layout="stack" data-layout-gap="m">
         <h2>Quick Start</h2>
 
         <h3>Install</h3>
-        <pre><code>npm install @profpowell/code-playground</code></pre>
-        <pre><code>import '@profpowell/code-playground';</code></pre>
+        <code-block language="bash">npm install @profpowell/code-playground</code-block>
+        <code-block language="javascript">import '@profpowell/code-playground';</code-block>
 
         <h3>CDN</h3>
-        <pre><code>&lt;script type="module" src="https://cdn.jsdelivr.net/npm/@profpowell/code-playground/dist/code-playground.js"&gt;&lt;/script&gt;</code></pre>
+        <code-block language="html">&lt;script type="module" src="https://cdn.jsdelivr.net/npm/@profpowell/code-playground/dist/code-playground.js"&gt;&lt;/script&gt;</code-block>
 
         <h3>Basic Usage</h3>
-        <pre><code>&lt;code-playground&gt;
+        <code-block language="html">&lt;code-playground&gt;
   &lt;textarea slot="html"&gt;&lt;h1&gt;Hello&lt;/h1&gt;&lt;/textarea&gt;
   &lt;textarea slot="css"&gt;h1 { color: royalblue; }&lt;/textarea&gt;
   &lt;textarea slot="js"&gt;console.log('ready');&lt;/textarea&gt;
-&lt;/code-playground&gt;</code></pre>
+&lt;/code-playground&gt;</code-block>
 
         <h3>With Options</h3>
-        <pre><code>&lt;code-playground
+        <code-block language="html">&lt;code-playground
   run-mode="manual"
   mode="dark"
   preview-position="bottom"
@@ -145,39 +143,34 @@ button {
   &lt;textarea slot="html"&gt;...&lt;/textarea&gt;
   &lt;textarea slot="css"&gt;...&lt;/textarea&gt;
   &lt;textarea slot="js"&gt;...&lt;/textarea&gt;
-&lt;/code-playground&gt;</code></pre>
+&lt;/code-playground&gt;</code-block>
       </section>
 
-      <!-- Related Components -->
       <section>
         <h2>Related Components</h2>
         <div class="related-grid">
-          <a class="related-card" href="https://profpowell.github.io/pdf-viewer/">
+          <a href="https://profpowell.github.io/pdf-viewer/">
             <strong>&lt;pdf-viewer&gt;</strong>
-            PDF document viewer with navigation, zoom, search, and thumbnails
+            <span>PDF document viewer with navigation, zoom, search, and thumbnails.</span>
           </a>
-          <a class="related-card" href="https://profpowell.github.io/vanilla-breeze/">
+          <a href="https://profpowell.github.io/browser-window/">
+            <strong>&lt;browser-window&gt;</strong>
+            <span>Safari-style browser window frames for demos and tutorials.</span>
+          </a>
+          <a href="https://profpowell.github.io/code-block/">
+            <strong>&lt;code-block&gt;</strong>
+            <span>Syntax-highlighted code blocks with copy, line numbers, and themes.</span>
+          </a>
+          <a href="https://vanilla-breeze.com/">
             <strong>Vanilla Breeze</strong>
-            Utility-first design tokens and theme system for web components
+            <span>A layered HTML component system with design tokens and themes.</span>
           </a>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site">
       MIT License &middot; <a href="https://github.com/ProfPowell/code-playground">View on GitHub</a>
     </footer>
-
-    <script>
-      const toggle = document.getElementById('theme-toggle');
-      const saved = localStorage.getItem('docs-theme');
-      if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.body.classList.add('dark');
-      }
-      toggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        localStorage.setItem('docs-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-      });
-    </script>
   </body>
 </html>
