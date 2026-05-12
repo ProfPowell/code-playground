@@ -39,6 +39,17 @@ Use external files when you want the playground to track authored demo files dir
 
 `head-src` is useful for preview-only assets such as external stylesheets, fonts, or extra `<meta>` tags.
 
+## Fit to Preview Content
+
+For inline tutorial embeds where the preview should size to its content (rather than filling a fixed pane), set the `fit-preview` attribute. The component observes the iframe's document and mirrors its `scrollHeight` onto the host element. Remove the attribute to restore the host element's previous inline height (or `auto`).
+
+```html
+<code-playground fit-preview>
+  <textarea slot="html"><p>Short demo.</p></textarea>
+  <textarea slot="css">p { color: tomato; }</textarea>
+</code-playground>
+```
+
 ## Current Status
 
 The first implementation slice includes:
@@ -55,6 +66,7 @@ The first implementation slice includes:
 - Local persistence for sources, active tab, and split position
 - External source loading via `html-src`, `css-src`, `js-src`, and `head-src`
 - Public `reloadSources()` support for refetching external source files
+- Optional `fit-preview` attribute that sizes the host element to the preview iframe's content
 
 ## Development
 

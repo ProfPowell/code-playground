@@ -189,6 +189,62 @@ test('soft rerun preserves preview state while full rebuild resets it', async ({
   await expect(el.locator('[data-role="preview-meta"]')).toContainText('Preview rebuilt')
 })
 
+test('fit-preview sizes host to iframe content and reverts on removal', async ({ page }) => {
+  const el = page.locator('#fit-preview-playground')
+  await expect(el.locator('iframe')).toBeVisible()
+
+  const initialInlineHeight = await el.evaluate((node) => node.style.height)
+  expect(initialInlineHeight).toBe('')
+
+  await page.evaluate(() => {
+    document.querySelector('#fit-preview-playground').setAttribute('fit-preview', '')
+  })
+
+  await page.waitForFunction(() => {
+    const node = document.querySelector('#fit-preview-playground')
+    const px = parseFloat(node.style.height)
+    return Number.isFinite(px) && px > 0
+  })
+
+  const shortHeight = await el.evaluate((node) => parseFloat(node.style.height))
+  expect(shortHeight).toBeGreaterThan(0)
+
+  await page.evaluate(() => {
+    document.querySelector('#fit-preview-playground').setValue({
+      html: '<div id="fit-content">' + Array.from({ length: 30 }, (_, i) => `<p>Line ${i + 1}</p>`).join('') + '</div>'
+    })
+  })
+
+  await page.waitForFunction((prev) => {
+    const node = document.querySelector('#fit-preview-playground')
+    const px = parseFloat(node.style.height)
+    return Number.isFinite(px) && px > prev + 50
+  }, shortHeight)
+
+  await page.evaluate(() => {
+    document.querySelector('#fit-preview-playground').removeAttribute('fit-preview')
+  })
+
+  await page.waitForFunction(() => document.querySelector('#fit-preview-playground').style.height === '')
+})
+
+test('fitPreview property mirrors fit-preview attribute', async ({ page }) => {
+  const initial = await page.evaluate(() => document.querySelector('#fit-preview-playground').fitPreview)
+  expect(initial).toBe(false)
+
+  await page.evaluate(() => {
+    document.querySelector('#fit-preview-playground').fitPreview = true
+  })
+  const hasAttr = await page.evaluate(() => document.querySelector('#fit-preview-playground').hasAttribute('fit-preview'))
+  expect(hasAttr).toBe(true)
+
+  await page.evaluate(() => {
+    document.querySelector('#fit-preview-playground').fitPreview = false
+  })
+  const removed = await page.evaluate(() => document.querySelector('#fit-preview-playground').hasAttribute('fit-preview'))
+  expect(removed).toBe(false)
+})
+
 test('host diagnostics survive soft and full reruns', async ({ page }) => {
   const el = page.locator('#missing-source-playground')
 

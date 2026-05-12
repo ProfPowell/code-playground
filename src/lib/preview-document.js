@@ -156,6 +156,29 @@ function createBridgeScript(runId) {
       sendReady: true
     })
   })
+
+  const measure = () => {
+    const target = document.scrollingElement || document.documentElement
+    if (!target) return 0
+    return target.scrollHeight
+  }
+
+  const sendResize = () => {
+    send('resize', { scrollHeight: measure() })
+  }
+
+  if (typeof ResizeObserver === 'function') {
+    const target = document.scrollingElement || document.documentElement
+    if (target) {
+      new ResizeObserver(() => sendResize()).observe(target)
+    }
+  }
+  window.addEventListener('load', sendResize)
+  if (document.readyState === 'complete') {
+    sendResize()
+  } else {
+    document.addEventListener('DOMContentLoaded', sendResize)
+  }
 })()
   `.trim()
 }

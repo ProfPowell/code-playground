@@ -33,6 +33,7 @@ export class CodePlayground extends HTMLElement {
   persistKey: string
   inheritTheme: boolean
   showConsole: boolean
+  fitPreview: boolean
   sourceUrls: CodePlaygroundSourceUrls
 
   getValue(): CodePlaygroundValue

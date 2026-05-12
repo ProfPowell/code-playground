@@ -14,6 +14,7 @@
  * @attr {string} persist - localStorage key used to remember source and layout state.
  * @attr {boolean} inherit-theme - Propagate `data-mode` and `data-theme` into the preview iframe.
  * @attr {boolean|string} show-console - Set to "false" to hide the console panel.
+ * @attr {boolean} fit-preview - Size the host element to match the preview iframe's content height.
  *
  * @csspart toolbar - File tabs, status, and primary actions.
  * @csspart editor-panel - Code editor workspace.
@@ -98,6 +99,7 @@ export class CodePlayground extends HTMLElement {
       'show-console',
       'persist',
       'inherit-theme',
+      'fit-preview',
       'html-src',
       'css-src',
       'js-src',
@@ -143,6 +145,9 @@ export class CodePlayground extends HTMLElement {
     this._hasConnectedOnce = false
     this._consoleOpen = false
     this._viewMode = 'split'
+    this._fitPreviewFallbackHeight = ''
+    this._fitPreviewFallbackCaptured = false
+    this._lastPreviewScrollHeight = 0
 
     this._handleMessage = this._handleMessage.bind(this)
     this._handleDividerPointerDown = this._handleDividerPointerDown.bind(this)
@@ -215,6 +220,7 @@ export class CodePlayground extends HTMLElement {
     this._cancelEditorBootstrap()
     clearTimeout(this._shareOutsideClickTimer)
     document.removeEventListener('click', this._handleShareOutsideClick)
+    this._disableFitPreview()
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -241,6 +247,15 @@ export class CodePlayground extends HTMLElement {
 
     if (name === 'show-console') {
       this._applyUiState()
+      return
+    }
+
+    if (name === 'fit-preview') {
+      if (newValue === null) {
+        this._disableFitPreview()
+      } else {
+        this._enableFitPreview()
+      }
       return
     }
 
@@ -308,13 +323,41 @@ export class CodePlayground extends HTMLElement {
     return this.getAttribute('persist') || ''
   }
 
+  set persistKey(value) {
+    if (value) {
+      this.setAttribute('persist', String(value))
+    } else {
+      this.removeAttribute('persist')
+    }
+  }
+
   get inheritTheme() {
     return this.hasAttribute('inherit-theme') && this.getAttribute('inherit-theme') !== 'false'
+  }
+
+  set inheritTheme(value) {
+    this.toggleAttribute('inherit-theme', Boolean(value))
   }
 
   get showConsole() {
     const attr = this.getAttribute('show-console')
     return attr === null ? true : attr !== 'false'
+  }
+
+  set showConsole(value) {
+    if (value) {
+      this.removeAttribute('show-console')
+    } else {
+      this.setAttribute('show-console', 'false')
+    }
+  }
+
+  get fitPreview() {
+    return this.hasAttribute('fit-preview') && this.getAttribute('fit-preview') !== 'false'
+  }
+
+  set fitPreview(value) {
+    this.toggleAttribute('fit-preview', Boolean(value))
   }
 
   get sourceUrls() {
@@ -323,6 +366,19 @@ export class CodePlayground extends HTMLElement {
       css: this.getAttribute('css-src') || '',
       js: this.getAttribute('js-src') || '',
       head: this.getAttribute('head-src') || ''
+    }
+  }
+
+  set sourceUrls(value) {
+    if (!value || typeof value !== 'object') return
+    for (const type of ALL_SOURCE_TYPES) {
+      const attr = SOURCE_ATTRS[type]
+      const next = value[type]
+      if (next) {
+        this.setAttribute(attr, String(next))
+      } else if (type in value) {
+        this.removeAttribute(attr)
+      }
     }
   }
 
@@ -533,6 +589,31 @@ export class CodePlayground extends HTMLElement {
     }))
 
     this._persistState()
+  }
+
+  _enableFitPreview() {
+    if (!this._fitPreviewFallbackCaptured) {
+      this._fitPreviewFallbackHeight = this.style.height || ''
+      this._fitPreviewFallbackCaptured = true
+    }
+    if (this._lastPreviewScrollHeight > 0) {
+      this.style.height = `${this._lastPreviewScrollHeight}px`
+    }
+  }
+
+  _disableFitPreview() {
+    if (this._fitPreviewFallbackCaptured) {
+      this.style.height = this._fitPreviewFallbackHeight
+      this._fitPreviewFallbackCaptured = false
+      this._fitPreviewFallbackHeight = ''
+    }
+  }
+
+  _applyFitPreviewHeight(scrollHeight) {
+    if (typeof scrollHeight !== 'number' || scrollHeight <= 0) return
+    this._lastPreviewScrollHeight = scrollHeight
+    if (!this.fitPreview) return
+    this.style.height = `${scrollHeight}px`
   }
 
   /**
@@ -1130,6 +1211,11 @@ export class CodePlayground extends HTMLElement {
         bubbles: true,
         composed: true
       }))
+      return
+    }
+
+    if (payload.type === 'resize') {
+      this._applyFitPreviewHeight(payload.detail?.scrollHeight)
       return
     }
 
