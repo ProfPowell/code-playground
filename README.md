@@ -39,9 +39,43 @@ Use external files when you want the playground to track authored demo files dir
 
 `head-src` is useful for preview-only assets such as external stylesheets, fonts, or extra `<meta>` tags.
 
+## Sizing
+
+By default a playground picks its own height, and a longer document makes it taller. Set a height on the element and the layout fills it instead, with the editor scrolling inside:
+
+```css
+code-playground {
+  block-size: 70vh;
+  min-block-size: 480px;
+}
+```
+
+## Saved Edits
+
+With `persist`, a panel is saved only when it differs from its authored source. Each saved edit remembers the source it was made against, so if you later change that panel, its visitors get your new version and their edit to it is dropped. Their edits to other panels are kept. Reset clears saved edits, and active tab, split position, and console state are remembered either way.
+
+## Console
+
+The console stays closed until it's opened, so messages never move the layout. When there's output, the collapsed bar shows a colored dot (red for errors, yellow for warnings) and the counts, such as `2 entries · 1 error, 1 warning`.
+
+## Avoiding a Flash on Load
+
+The component loads as a deferred module, so the browser can paint your page before the element upgrades. Until then, the source `<textarea>`s are ordinary visible content. The component can't prevent this from its own script, so add this rule to CSS that loads in `<head>`:
+
+```css
+code-playground:not(:defined) {
+  display: block;
+  min-block-size: 34rem; /* approximate height of the default layout */
+}
+
+code-playground:not(:defined) > * {
+  display: none;
+}
+```
+
 ## Fit to Preview Content
 
-For inline tutorial embeds where the preview should size to its content (rather than filling a fixed pane), set the `fit-preview` attribute. The component observes the iframe's document and mirrors its `scrollHeight` onto the host element. Remove the attribute to restore the host element's previous inline height (or `auto`).
+For inline tutorial embeds where the preview should size to its content (rather than filling a fixed pane), set the `fit-preview` attribute. The preview pane follows its content as it grows or shrinks, and the playground's height follows the taller of the editor and the preview. Remove the attribute to return to the default layout.
 
 ```html
 <code-playground fit-preview>

@@ -14,7 +14,7 @@
  * @attr {string} persist - localStorage key used to remember source and layout state.
  * @attr {boolean} inherit-theme - Propagate `data-mode` and `data-theme` into the preview iframe.
  * @attr {boolean|string} show-console - Set to "false" to hide the console panel.
- * @attr {boolean} fit-preview - Size the host element to match the preview iframe's content height.
+ * @attr {boolean} fit-preview - Size the preview pane to its content, growing or shrinking the playground to match.
  *
  * @csspart toolbar - File tabs, status, and primary actions.
  * @csspart editor-panel - Code editor workspace.
@@ -23,7 +23,7 @@
  */
 
 import { composeExportDocument, composePreviewDocument, normalizePlaygroundSources } from './lib/preview-document.js'
-import { readStorage, writeStorage } from './lib/storage.js'
+import { hashText, readStorage, writeStorage } from './lib/storage.js'
 import { observePageTheme } from './lib/theme-observer.js'
 
 const SOURCE_TYPES = ['html', 'css', 'js']
@@ -41,12 +41,6 @@ const DEFAULT_SPLIT = 48
 const MIN_SPLIT = 28
 const MAX_SPLIT = 72
 const PREVIEW_SANDBOX = 'allow-scripts allow-forms allow-modals allow-downloads allow-popups'
-
-if (typeof document !== 'undefined') {
-  const antiFlash = document.createElement('style')
-  antiFlash.textContent = 'code-playground:not(:defined){display:block;opacity:0}'
-  document.head.appendChild(antiFlash)
-}
 
 function escapeHtml(value) {
   return String(value)
@@ -114,7 +108,7 @@ export class CodePlayground extends HTMLElement {
     this._activeTab = 'html'
     this._editors = new Map()
     this._sourceElements = new Map()
-    this._persistedValueKeys = new Set()
+    this._savedEdits = new Map()
     this._values = { html: '', css: '', js: '', head: '' }
     this._initialValues = { html: '', css: '', js: '', head: '' }
     this._appliedValues = { html: '', css: '', js: '', head: '' }
@@ -145,9 +139,7 @@ export class CodePlayground extends HTMLElement {
     this._hasConnectedOnce = false
     this._consoleOpen = false
     this._viewMode = 'split'
-    this._fitPreviewFallbackHeight = ''
-    this._fitPreviewFallbackCaptured = false
-    this._lastPreviewScrollHeight = 0
+    this._lastPreviewHeight = 0
 
     this._handleMessage = this._handleMessage.bind(this)
     this._handleDividerPointerDown = this._handleDividerPointerDown.bind(this)
@@ -170,9 +162,7 @@ export class CodePlayground extends HTMLElement {
       this._captureInitialSources()
 
       const persisted = this.persistKey ? readStorage(this.persistKey) : null
-      if (persisted?.values) {
-        this._values = { ...this._values, ...persisted.values }
-      }
+      this._restoreSavedEdits(persisted)
       this._splitPosition = clamp(persisted?.splitPosition ?? DEFAULT_SPLIT, MIN_SPLIT, MAX_SPLIT)
       const validTabs = [...SOURCE_TYPES, 'result']
       this._activeTab = persisted?.activeTab && validTabs.includes(persisted.activeTab)
@@ -181,6 +171,7 @@ export class CodePlayground extends HTMLElement {
       this._consoleOpen = persisted?.consoleOpen ?? false
       this._viewMode = persisted?.viewMode === 'code' ? 'code' : 'split'
 
+      this._setEditorHostState('idle')
       this._bindShellEvents()
       this._refreshDirtyState()
       this._renderConsole()
@@ -427,6 +418,7 @@ export class CodePlayground extends HTMLElement {
 
   reset() {
     this._values = { ...this._initialValues }
+    this._savedEdits.clear()
 
     for (const type of SOURCE_TYPES) {
       this._setEditorValue(type, this._values[type])
@@ -592,28 +584,19 @@ export class CodePlayground extends HTMLElement {
   }
 
   _enableFitPreview() {
-    if (!this._fitPreviewFallbackCaptured) {
-      this._fitPreviewFallbackHeight = this.style.height || ''
-      this._fitPreviewFallbackCaptured = true
-    }
-    if (this._lastPreviewScrollHeight > 0) {
-      this.style.height = `${this._lastPreviewScrollHeight}px`
+    if (this._lastPreviewHeight > 0) {
+      this.style.setProperty('--cp-fit-block-size', `${this._lastPreviewHeight}px`)
     }
   }
 
   _disableFitPreview() {
-    if (this._fitPreviewFallbackCaptured) {
-      this.style.height = this._fitPreviewFallbackHeight
-      this._fitPreviewFallbackCaptured = false
-      this._fitPreviewFallbackHeight = ''
-    }
+    this.style.removeProperty('--cp-fit-block-size')
   }
 
-  _applyFitPreviewHeight(scrollHeight) {
-    if (typeof scrollHeight !== 'number' || scrollHeight <= 0) return
-    this._lastPreviewScrollHeight = scrollHeight
-    if (!this.fitPreview) return
-    this.style.height = `${scrollHeight}px`
+  _applyFitPreviewHeight(height) {
+    if (typeof height !== 'number' || height <= 0) return
+    this._lastPreviewHeight = height
+    if (this.fitPreview) this._enableFitPreview()
   }
 
   /**
@@ -660,14 +643,17 @@ export class CodePlayground extends HTMLElement {
     for (const item of loaded) {
       this._initialValues[item.type] = item.value
 
-      const shouldApply = options.forceApply === true || !this._persistedValueKeys.has(item.type)
-      if (shouldApply) {
-        if (this._values[item.type] !== item.value) {
-          this._values[item.type] = item.value
-          this._setEditorValue(item.type, item.value)
-          this._syncSourceElement(item.type, item.value)
-          appliedValuesChanged = true
-        }
+      const savedEdit = this._savedEdits.get(item.type)
+      this._savedEdits.delete(item.type)
+      const keepSavedEdit = options.forceApply !== true
+        && savedEdit
+        && (savedEdit.baseline === null || savedEdit.baseline === hashText(item.value))
+
+      if (!keepSavedEdit && this._values[item.type] !== item.value) {
+        this._values[item.type] = item.value
+        this._setEditorValue(item.type, item.value)
+        this._syncSourceElement(item.type, item.value)
+        appliedValuesChanged = true
       }
     }
 
@@ -765,19 +751,13 @@ export class CodePlayground extends HTMLElement {
         <div class="workspace" data-role="workspace">
           <section class="editor-panel" part="editor-panel">
             <div class="editor-frame" data-editor-panel="html" role="tabpanel" aria-label="HTML editor">
-              <div class="editor-host" data-editor="html" data-editor-state="idle">
-                <div class="editor-placeholder">Loading editor…</div>
-              </div>
+              <div class="editor-host" data-editor="html" data-editor-state="idle"></div>
             </div>
             <div class="editor-frame" data-editor-panel="css" role="tabpanel" aria-label="CSS editor" hidden>
-              <div class="editor-host" data-editor="css" data-editor-state="idle">
-                <div class="editor-placeholder">Loading editor…</div>
-              </div>
+              <div class="editor-host" data-editor="css" data-editor-state="idle"></div>
             </div>
             <div class="editor-frame" data-editor-panel="js" role="tabpanel" aria-label="JavaScript editor" hidden>
-              <div class="editor-host" data-editor="js" data-editor-state="idle">
-                <div class="editor-placeholder">Loading editor…</div>
-              </div>
+              <div class="editor-host" data-editor="js" data-editor-state="idle"></div>
             </div>
           </section>
           <div class="divider" data-role="divider" role="separator" tabindex="0" aria-label="Resize editor and preview panels"></div>
@@ -796,6 +776,7 @@ export class CodePlayground extends HTMLElement {
           <button class="console-tray-toggle" data-action="toggle-console" type="button" aria-expanded="false">
             <svg class="console-tray-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 2l4 4-4 4"/></svg>
             <span>Console</span>
+            <span class="console-indicator" aria-hidden="true"></span>
             <span class="panel-meta console-summary" data-role="console-summary">0 entries</span>
           </button>
           <div class="console-tray-body">
@@ -860,14 +841,32 @@ export class CodePlayground extends HTMLElement {
       this._initialValues[type] = value
       this._appliedValues[type] = value
     }
+  }
 
-    const persisted = this.persistKey ? readStorage(this.persistKey) : null
-    this._persistedValueKeys = new Set(
-      Object.entries(persisted?.values || {})
-        .filter(([, value]) => typeof value === 'string')
-        .map(([type]) => type)
-        .filter((type) => ALL_SOURCE_TYPES.includes(type))
-    )
+  /**
+   * Apply saved edits whose authored source is still the one they were made
+   * against. A panel with no recorded baseline comes from an older version;
+   * it is kept unless it matches the authored source, since it may be real work.
+   */
+  _restoreSavedEdits(persisted) {
+    for (const type of ALL_SOURCE_TYPES) {
+      const value = persisted?.values?.[type]
+      if (typeof value !== 'string') continue
+
+      const baseline = persisted.baselines?.[type] ?? null
+
+      // A file's text isn't known yet, so reloadSources() makes the final call.
+      if (this._getSourceUrl(type)) {
+        this._savedEdits.set(type, { value, baseline })
+        this._values[type] = value
+        continue
+      }
+
+      if (value === this._initialValues[type]) continue
+      if (baseline !== null && baseline !== hashText(this._initialValues[type])) continue
+
+      this._values[type] = value
+    }
   }
 
   _bindShellEvents() {
@@ -876,7 +875,9 @@ export class CodePlayground extends HTMLElement {
         this._activeTab = button.getAttribute('data-tab')
         this._applyTabState()
         this._persistState()
-        this._loadEditorRuntime().catch(() => {})
+        this._loadEditorRuntime()
+          .then(() => this._focusActiveEditor())
+          .catch(() => {})
       })
     })
 
@@ -1127,14 +1128,25 @@ export class CodePlayground extends HTMLElement {
       if (state === 'error') {
         host.innerHTML = '<div class="editor-placeholder editor-placeholder-error">Editor failed to load.</div>'
       } else if (state === 'loading' || state === 'idle') {
-        host.innerHTML = '<div class="editor-placeholder">Loading editor…</div>'
+        this._renderSourcePreview(host)
       }
     })
   }
 
+  _renderSourcePreview(host) {
+    const value = this._values[host.getAttribute('data-editor')] ?? ''
+    host.innerHTML = `<pre class="editor-source-preview">${escapeHtml(value)}</pre>`
+  }
+
   _setEditorValue(type, value) {
     const view = this._editors.get(type)
-    if (!view) return
+    if (!view) {
+      const host = this.shadowRoot.querySelector(`[data-editor="${type}"]`)
+      if (host && host.getAttribute('data-editor-state') !== 'error') {
+        this._renderSourcePreview(host)
+      }
+      return
+    }
 
     this._suspendEditorSync = true
     this._editorRuntime?.setEditorValue(view, value)
@@ -1215,7 +1227,7 @@ export class CodePlayground extends HTMLElement {
     }
 
     if (payload.type === 'resize') {
-      this._applyFitPreviewHeight(payload.detail?.scrollHeight)
+      this._applyFitPreviewHeight(payload.detail?.height)
       return
     }
 
@@ -1263,11 +1275,6 @@ export class CodePlayground extends HTMLElement {
     })
     if (this._consoleEntries.length > 200) {
       this._consoleEntries.shift()
-    }
-
-    if (!this._consoleOpen) {
-      this._consoleOpen = true
-      this._applyConsoleState()
     }
 
     this._renderConsole({ stickToBottom: shouldStickToBottom })
@@ -1343,8 +1350,10 @@ export class CodePlayground extends HTMLElement {
       return '0 entries'
     }
 
+    const attention = this._formatConsoleAttention()
+
     if (entries.length === totalCount && matchedCount === totalCount) {
-      return formatCount(totalCount, 'entry', 'entries')
+      return [formatCount(totalCount, 'entry', 'entries'), attention].filter(Boolean).join(' · ')
     }
 
     const parts = []
@@ -1360,7 +1369,36 @@ export class CodePlayground extends HTMLElement {
     }
 
     parts.push(`${totalCount} total`)
+    if (attention) parts.push(attention)
     return parts.join(' · ')
+  }
+
+  _countConsoleLevel(level) {
+    return this._consoleEntries.filter((entry) => entry.level === level).length
+  }
+
+  _formatConsoleAttention() {
+    const errors = this._countConsoleLevel('error')
+    const warnings = this._countConsoleLevel('warn')
+    return [
+      errors ? formatCount(errors, 'error') : '',
+      warnings ? formatCount(warnings, 'warning') : ''
+    ].filter(Boolean).join(', ')
+  }
+
+  _applyConsoleSeverity() {
+    const panel = this.shadowRoot.querySelector('.console-panel')
+    if (!panel) return
+
+    if (!this._consoleEntries.length) {
+      panel.removeAttribute('data-severity')
+    } else if (this._countConsoleLevel('error')) {
+      panel.dataset.severity = 'error'
+    } else if (this._countConsoleLevel('warn')) {
+      panel.dataset.severity = 'warn'
+    } else {
+      panel.dataset.severity = 'log'
+    }
   }
 
   _renderConsole({ stickToBottom = false } = {}) {
@@ -1371,6 +1409,8 @@ export class CodePlayground extends HTMLElement {
     const searchInput = this.shadowRoot.querySelector('[data-role="console-search"]')
     const collapseToggle = this.shadowRoot.querySelector('[data-role="console-collapse"]')
     const viewModel = this._getConsoleViewModel()
+
+    this._applyConsoleSeverity()
 
     if (summary) {
       summary.textContent = this._formatConsoleSummary(viewModel)
@@ -1432,8 +1472,12 @@ export class CodePlayground extends HTMLElement {
 
     if (!isResult) {
       this._ensureEditorView(this._activeTab)
-      this._editorRuntime?.focusEditor(this._editors.get(this._activeTab))
     }
+  }
+
+  _focusActiveEditor() {
+    if (this._activeTab === 'result') return
+    this._editorRuntime?.focusEditor(this._editors.get(this._activeTab))
   }
 
   _toggleShareMenu() {
@@ -1642,8 +1686,19 @@ export class CodePlayground extends HTMLElement {
   _persistState() {
     if (!this.persistKey) return
 
+    const values = {}
+    const baselines = {}
+    for (const type of ALL_SOURCE_TYPES) {
+      if (this._values[type] === this._initialValues[type]) continue
+      values[type] = this._values[type]
+      // An unresolved edit keeps its baseline: a failed fetch left no new one.
+      const savedEdit = this._savedEdits.get(type)
+      baselines[type] = savedEdit ? savedEdit.baseline : hashText(this._initialValues[type])
+    }
+
     writeStorage(this.persistKey, {
-      values: this.getValue(),
+      values,
+      baselines,
       activeTab: this._activeTab,
       splitPosition: this._splitPosition,
       consoleOpen: this._consoleOpen,
@@ -1684,12 +1739,25 @@ export class CodePlayground extends HTMLElement {
         --cp-token-function: #7c2d12;
         --cp-token-meta: #6d28d9;
         --cp-split: ${DEFAULT_SPLIT}%;
-        display: block;
+        --cp-workspace-min: 26rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
         color: var(--cp-text);
         font-family: var(--cp-font-sans);
+        text-align: start;
+      }
+
+      :host([hidden]) {
+        display: none;
+      }
+
+      :host([data-effective-mode="light"]) {
+        color-scheme: light;
       }
 
       :host([data-effective-mode="dark"]) {
+        color-scheme: dark;
         --cp-bg: var(--color-surface, #0f172a);
         --cp-panel-bg: var(--color-surface-raised, #111827);
         --cp-editor-bg: var(--color-surface-sunken, #0b1220);
@@ -1718,6 +1786,10 @@ export class CodePlayground extends HTMLElement {
 
       .shell {
         display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        block-size: 100%;
+        min-block-size: 0;
         gap: 12px;
         padding: 12px;
         border: 1px solid var(--cp-border);
@@ -1726,6 +1798,23 @@ export class CodePlayground extends HTMLElement {
           radial-gradient(circle at top right, color-mix(in oklab, var(--cp-accent) 14%, transparent), transparent 34%),
           linear-gradient(180deg, color-mix(in oklab, var(--cp-toolbar-bg) 85%, var(--cp-bg)), var(--cp-bg));
         box-shadow: var(--cp-shadow);
+      }
+
+      /* Shares the workspace's row, giving it a default height that yields to a
+         host with its own: the percentage only applies once the row is definite. */
+      .shell::before {
+        content: '';
+        grid-area: 2 / 1;
+        block-size: var(--cp-workspace-min);
+        max-block-size: 100%;
+      }
+
+      .shell:has(> .workspace[data-axis="vertical"]) {
+        --cp-workspace-min: 33.5rem;
+      }
+
+      .toolbar {
+        grid-area: 1 / 1;
       }
 
       .toolbar,
@@ -1774,8 +1863,9 @@ export class CodePlayground extends HTMLElement {
       }
 
       .workspace {
+        grid-area: 2 / 1;
         display: flex;
-        min-block-size: 26rem;
+        min-block-size: 0;
         border: 1px solid var(--cp-border);
         border-radius: var(--cp-radius-inner);
         overflow: hidden;
@@ -1803,6 +1893,7 @@ export class CodePlayground extends HTMLElement {
 
       .workspace[data-result="true"] .preview-panel {
         flex: 1 1 100%;
+        grid-template-rows: minmax(0, 1fr);
       }
 
       .editor-panel,
@@ -1814,13 +1905,14 @@ export class CodePlayground extends HTMLElement {
       .editor-panel {
         flex: 0 0 var(--cp-split);
         display: grid;
+        grid-template-rows: minmax(0, 1fr);
         background: var(--cp-editor-bg);
       }
 
       .preview-panel {
         flex: 1 1 auto;
         display: grid;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
         background: var(--cp-preview-bg);
       }
 
@@ -1830,16 +1922,27 @@ export class CodePlayground extends HTMLElement {
 
       .editor-frame {
         min-height: 0;
+        overflow: hidden;
       }
 
       .editor-host {
         block-size: 100%;
-        min-block-size: 26rem;
         position: relative;
       }
 
-      .workspace[data-axis="vertical"] .editor-host {
-        min-block-size: 14rem;
+      /* Matches the CodeMirror metrics so the swap to the real editor is seamless. */
+      .editor-source-preview {
+        margin: 0;
+        padding: 16px 20px;
+        block-size: 100%;
+        overflow: auto;
+        color: var(--cp-text);
+        background: var(--cp-editor-bg);
+        font-family: var(--cp-font-mono);
+        font-size: 14px;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
       }
 
       .editor-placeholder {
@@ -1905,9 +2008,24 @@ export class CodePlayground extends HTMLElement {
       iframe {
         inline-size: 100%;
         block-size: 100%;
-        min-block-size: 16rem;
         border: 0;
-        background: white;
+        background: var(--cp-preview-bg);
+      }
+
+      :host([fit-preview]:not([fit-preview="false"])) .shell::before {
+        display: none;
+      }
+
+      :host([fit-preview]:not([fit-preview="false"])) .editor-panel {
+        min-block-size: 6rem;
+      }
+
+      :host([fit-preview]:not([fit-preview="false"])) .workspace[data-axis="vertical"] .editor-panel {
+        flex: 0 0 auto;
+      }
+
+      :host([fit-preview]:not([fit-preview="false"])) iframe {
+        block-size: var(--cp-fit-block-size, 100%);
       }
 
       .console-panel {
@@ -1941,6 +2059,27 @@ export class CodePlayground extends HTMLElement {
         transition: transform 0.2s ease;
         color: var(--cp-muted);
         flex-shrink: 0;
+      }
+
+      .console-indicator {
+        display: none;
+        flex: none;
+        inline-size: 8px;
+        block-size: 8px;
+        border-radius: 50%;
+        background: var(--cp-accent);
+      }
+
+      .console-panel[data-severity]:not([data-open="true"]) .console-indicator {
+        display: inline-block;
+      }
+
+      .console-panel[data-severity="warn"] .console-indicator {
+        background: #cca700;
+      }
+
+      .console-panel[data-severity="error"] .console-indicator {
+        background: #f14c4c;
       }
 
       .console-panel[data-open="true"] .console-tray-chevron {

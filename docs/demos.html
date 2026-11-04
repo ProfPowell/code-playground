@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze/dist/cdn/icons">
+<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/icons">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,9 +7,9 @@
     <meta name="description" content="Interactive demos for the code-playground web component.">
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 
-    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.css">
-    <script type="module" src="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.js"></script>
-    <script type="module" src="https://unpkg.com/@profpowell/code-block"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.css">
+    <script type="module" src="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.js"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.9.0"></script>
 
     <script type="module" src="https://unpkg.com/@profpowell/code-playground"></script>
     <link rel="stylesheet" href="./styles.css">
@@ -175,7 +175,7 @@ h1 { color: #16a34a; margin-top: 0; }</textarea>
       <section id="persist" data-layout="stack" data-layout-gap="m">
         <h2>Persistence</h2>
         <p>
-          Set the <code>persist</code> attribute to a unique key. The component saves source, active tab,
+          Set the <code>persist</code> attribute to a unique key. The component saves edited panels, active tab,
           and split position to <code>localStorage</code>. Edits survive page reloads.
         </p>
         <code-playground persist="demo-persist" title="Persistence demo">

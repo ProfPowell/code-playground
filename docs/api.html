@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze/dist/cdn/icons">
+<html lang="en" data-icon-path="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/icons">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,9 +7,9 @@
     <meta name="description" content="API reference for the code-playground web component: attributes, properties, methods, events, slots, and styling hooks.">
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 
-    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.css">
-    <script type="module" src="https://unpkg.com/vanilla-breeze/dist/cdn/vanilla-breeze.js"></script>
-    <script type="module" src="https://unpkg.com/@profpowell/code-block"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.css">
+    <script type="module" src="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.js"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.9.0"></script>
 
     <link rel="stylesheet" href="./styles.css">
   </head>
@@ -48,9 +48,10 @@
             <tr><td><code>css-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of an external CSS file to load into the CSS panel.</td></tr>
             <tr><td><code>js-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of an external JavaScript file to load into the JS panel.</td></tr>
             <tr><td><code>head-src</code></td><td><code>string</code></td><td>&mdash;</td><td>URL of a preview-only head fragment (e.g. <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code>, extra <code>&lt;meta&gt;</code> tags).</td></tr>
-            <tr><td><code>persist</code></td><td><code>string</code></td><td>&mdash;</td><td>localStorage key used for saving source, active tab, and split position.</td></tr>
+            <tr><td><code>persist</code></td><td><code>string</code></td><td>&mdash;</td><td>localStorage key used for saving edited panels, active tab, split position, and console state. A saved edit is dropped if that panel's authored source later changes.</td></tr>
             <tr><td><code>inherit-theme</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Copies page <code>data-mode</code> and <code>data-theme</code> to the preview document.</td></tr>
             <tr><td><code>show-console</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Set to <code>"false"</code> to hide the console panel.</td></tr>
+            <tr><td><code>fit-preview</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Sizes the preview pane to its content, growing or shrinking the playground to match.</td></tr>
           </tbody>
         </table>
       </section>

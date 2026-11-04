@@ -53,10 +53,10 @@ function makeSignature(state) {
   return `${state.mode || 'auto'}::${state.theme || ''}`
 }
 
-function notifyListeners(force = false) {
+function notifyListeners() {
   const state = detectPageThemeState()
   const nextSignature = makeSignature(state)
-  if (!force && nextSignature === currentSignature) return
+  if (nextSignature === currentSignature) return
   currentSignature = nextSignature
   listeners.forEach((listener) => listener(state))
 }
@@ -86,11 +86,15 @@ function stopObserver() {
 
 export function observePageTheme(listener) {
   listeners.add(listener)
+  const state = detectPageThemeState()
   if (listeners.size === 1) {
+    currentSignature = makeSignature(state)
     startObserver()
   }
 
-  notifyListeners(true)
+  // Seed only the new listener. Re-notifying existing ones makes every
+  // playground on the page rebuild its preview each time another connects.
+  listener(state)
 
   return () => {
     listeners.delete(listener)
