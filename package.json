@@ -1,6 +1,6 @@
 {
   "name": "@profpowell/code-playground",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A standalone web component for live HTML, CSS, and JavaScript editing with sandboxed preview and console output",
   "type": "module",
   "main": "dist/code-playground.js",

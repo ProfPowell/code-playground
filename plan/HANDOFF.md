@@ -1,6 +1,6 @@
 # Handoff
 
-Snapshot date: 2026-04-04
+Snapshot date: 2026-11-04 (version 0.3.0; see `CHANGELOG.md`)
 
 ## Current State
 
@@ -27,12 +27,12 @@ Most recently verified:
 
 Recent test count:
 
-- Playwright: 11 passing tests
+- Playwright: 45 passing tests
 
 Recent build snapshot:
 
-- `dist/code-playground.js`: about 60 kB
-- `dist/editor-runtime-*.js`: about 674 kB
+- `dist/code-playground.js`: about 81 kB
+- `dist/editor-runtime-*.js`: about 682 kB
 
 The large editor runtime chunk is still the biggest obvious technical debt item.
 
@@ -51,6 +51,9 @@ The large editor runtime chunk is still the biggest obvious technical debt item.
 - `softRun()` means JS-only rerun inside the existing iframe.
 - Console entries track whether they came from the host or the preview.
 - Host diagnostics are intentionally preserved across preview reruns and rebuilds.
+- A saved edit is tied to a fingerprint of the source it was edited from, and is dropped when that source changes.
+- The console never opens by itself; the collapsed bar shows severity instead.
+- Pre-upgrade flash can only be prevented by CSS the page loads in `<head>`, not by the component's own script.
 
 ## Known Risks And Gaps
 
@@ -71,5 +74,6 @@ The large editor runtime chunk is still the biggest obvious technical debt item.
 
 - If you touch execution logic, read `ARCHITECTURE.md` first.
 - If you touch preview behavior, add Playwright coverage.
+- The docs load the published package from unpkg, so `npm run dev` on the docs doesn't show local changes. Use `test/test-page.html`, which loads `src/`.
 - If you regenerate build artifacts, keep `dist/` and `custom-elements.json` in sync.
 - If you add a task not captured here, update `AGENT-TASKS.md` and `ROADMAP.md` so the repo stays handoff-friendly.
