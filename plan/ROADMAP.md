@@ -98,6 +98,13 @@ Goals:
 - Better asset-loading helpers
 - More polished docs author workflow
 
+## Follow-ups From 0.3.0
+
+- Migrate to ESLint 10 and Vite 8. `npm audit` reports moderate issues in ESLint's dependencies; production dependencies report none.
+- Forward newer Vanilla Breeze attributes such as `data-accent` through `inherit-theme`.
+- Update the split axis when the window is resized; it's only computed when the layout is applied.
+- Add a Prettier config or remove `format:check`. With no config, the script's defaults disagree with the code's no-semicolon style.
+
 ## Explicitly Deferred
 
 These are out of scope until the core component is more mature:

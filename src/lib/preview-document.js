@@ -157,21 +157,50 @@ function createBridgeScript(runId) {
     })
   })
 
+  // Measure the content rather than the document: a document is never shorter
+  // than its viewport, so its scrollHeight could grow the preview but not shrink it.
   const measure = () => {
-    const target = document.scrollingElement || document.documentElement
-    if (!target) return 0
-    return target.scrollHeight
+    const body = document.body
+    if (!body) return 0
+    const range = document.createRange()
+    range.selectNodeContents(body)
+    const style = getComputedStyle(body)
+    const below = ['paddingBottom', 'borderBottomWidth', 'marginBottom']
+      .reduce((total, property) => total + (parseFloat(style[property]) || 0), 0)
+    return Math.ceil(range.getBoundingClientRect().bottom + window.scrollY + below)
   }
 
+  let lastHeight = 0
   const sendResize = () => {
-    send('resize', { scrollHeight: measure() })
+    const height = measure()
+    if (height === lastHeight) return
+    lastHeight = height
+    send('resize', { height })
+  }
+
+  let resizeQueued = false
+  const queueResize = () => {
+    if (resizeQueued) return
+    resizeQueued = true
+    requestAnimationFrame(() => {
+      resizeQueued = false
+      sendResize()
+    })
   }
 
   if (typeof ResizeObserver === 'function') {
-    const target = document.scrollingElement || document.documentElement
-    if (target) {
-      new ResizeObserver(() => sendResize()).observe(target)
-    }
+    const resizeObserver = new ResizeObserver(queueResize)
+    resizeObserver.observe(document.documentElement)
+    if (document.body) resizeObserver.observe(document.body)
+  }
+  // A body held open by min-height never changes size when its content does.
+  if (document.body) {
+    new MutationObserver(queueResize).observe(document.body, {
+      attributes: true,
+      characterData: true,
+      childList: true,
+      subtree: true
+    })
   }
   window.addEventListener('load', sendResize)
   if (document.readyState === 'complete') {

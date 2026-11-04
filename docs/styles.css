@@ -1,5 +1,16 @@
 /* Page-specific overrides on top of vanilla-breeze. Keep this small. */
 
+/* Before the deferred module upgrades the element, hide the raw source
+   textareas and reserve the shell's height so nothing jumps. */
+code-playground:not(:defined) {
+  display: block;
+  min-block-size: 34rem;
+}
+
+code-playground:not(:defined) > * {
+  display: none;
+}
+
 main {
   max-width: 960px;
   margin-inline: auto;

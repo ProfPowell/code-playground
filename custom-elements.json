@@ -33,23 +33,23 @@
             },
             {
               "kind": "field",
-              "name": "persistKey",
-              "readonly": true
+              "name": "persistKey"
             },
             {
               "kind": "field",
-              "name": "inheritTheme",
-              "readonly": true
+              "name": "inheritTheme"
             },
             {
               "kind": "field",
-              "name": "showConsole",
-              "readonly": true
+              "name": "showConsole"
             },
             {
               "kind": "field",
-              "name": "sourceUrls",
-              "readonly": true
+              "name": "fitPreview"
+            },
+            {
+              "kind": "field",
+              "name": "sourceUrls"
             },
             {
               "kind": "method",
@@ -177,6 +177,9 @@
             },
             {
               "name": "inherit-theme"
+            },
+            {
+              "name": "fit-preview"
             },
             {
               "name": "html-src"
@@ -371,6 +374,16 @@
         },
         {
           "kind": "function",
+          "name": "hashText",
+          "parameters": [
+            {
+              "name": "text"
+            }
+          ],
+          "description": "Short fingerprint of a panel's authored source, used to detect that it changed."
+        },
+        {
+          "kind": "function",
           "name": "readStorage",
           "parameters": [
             {
@@ -397,6 +410,14 @@
           "name": "makeStorageKey",
           "declaration": {
             "name": "makeStorageKey",
+            "module": "src/lib/storage.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hashText",
+          "declaration": {
+            "name": "hashText",
             "module": "src/lib/storage.js"
           }
         },
