@@ -1,6 +1,6 @@
 # Handoff
 
-Snapshot date: 2026-11-04 (version 0.3.0; see `CHANGELOG.md`)
+Snapshot date: 2026-11-04 (version 0.3.1; see `CHANGELOG.md`)
 
 ## Current State
 

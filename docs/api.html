@@ -9,22 +9,22 @@
 
     <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.css">
     <script type="module" src="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.js"></script>
-    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.9.0"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.10.0"></script>
 
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
     <header class="site" data-sticky>
-      <nav data-layout="cluster" data-layout-justify="space-between" aria-label="Primary">
-        <a class="brand" href="index.html"><strong>&lt;code-playground&gt;</strong></a>
-        <nav data-layout="cluster" data-layout-gap="m" aria-label="Sections">
+      <a class="brand" href="index.html">&lt;code-playground&gt;</a>
+      <div class="site-actions">
+        <nav data-layout="cluster" data-layout-gap="xs" aria-label="Primary">
           <a href="index.html">Home</a>
           <a href="demos.html">Demos</a>
           <a href="api.html" aria-current="page">API</a>
           <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
-          <theme-picker compact></theme-picker>
         </nav>
-      </nav>
+        <theme-picker compact></theme-picker>
+      </div>
     </header>
 
     <main data-layout="stack" data-layout-gap="xl">
@@ -33,7 +33,7 @@
         <p>Attributes, properties, methods, events, slots, and styling hooks for <code>&lt;code-playground&gt;</code>.</p>
       </section>
 
-      <section id="attributes">
+      <section id="attributes" data-layout="stack" data-layout-gap="m">
         <h2>Attributes</h2>
         <table>
           <thead>
@@ -56,7 +56,7 @@
         </table>
       </section>
 
-      <section id="properties">
+      <section id="properties" data-layout="stack" data-layout-gap="m">
         <h2>Properties</h2>
         <table>
           <thead>
@@ -76,7 +76,7 @@
         </table>
       </section>
 
-      <section id="methods">
+      <section id="methods" data-layout="stack" data-layout-gap="m">
         <h2>Methods</h2>
         <table>
           <thead>
@@ -98,7 +98,7 @@
         </table>
       </section>
 
-      <section id="events">
+      <section id="events" data-layout="stack" data-layout-gap="m">
         <h2>Events</h2>
         <table>
           <thead>
@@ -116,7 +116,7 @@
         </table>
       </section>
 
-      <section id="slots">
+      <section id="slots" data-layout="stack" data-layout-gap="m">
         <h2>Slots</h2>
         <table>
           <thead>
@@ -130,7 +130,7 @@
         </table>
       </section>
 
-      <section id="css-parts">
+      <section id="css-parts" data-layout="stack" data-layout-gap="m">
         <h2>CSS Parts</h2>
         <table>
           <thead>
@@ -163,11 +163,12 @@
             <tr><td><code>--cp-text</code></td><td><code>#111827</code></td><td>Primary text color</td></tr>
             <tr><td><code>--cp-muted</code></td><td><code>#6b7280</code></td><td>Muted / secondary text color</td></tr>
             <tr><td><code>--cp-accent</code></td><td><code>#2563eb</code></td><td>Accent / interactive color</td></tr>
-            <tr><td><code>--cp-radius</code></td><td><code>16px</code></td><td>Outer border radius</td></tr>
-            <tr><td><code>--cp-radius-inner</code></td><td><code>12px</code></td><td>Inner panel border radius</td></tr>
+            <tr><td><code>--cp-radius</code></td><td><code>12px</code></td><td>Outer border radius (uses <code>--radius-m</code> when set)</td></tr>
+            <tr><td><code>--cp-radius-inner</code></td><td><code>6px</code></td><td>Buttons, inputs, and menu items (uses <code>--radius-s</code> when set)</td></tr>
             <tr><td><code>--cp-font-sans</code></td><td><code>"SF Pro Text", sans-serif</code></td><td>UI font stack</td></tr>
             <tr><td><code>--cp-font-mono</code></td><td><code>"SFMono-Regular", monospace</code></td><td>Code font stack</td></tr>
-            <tr><td><code>--cp-shadow</code></td><td><code>0 18px 40px ...</code></td><td>Outer box shadow</td></tr>
+            <tr><td><code>--cp-shadow</code></td><td><code>none</code></td><td>Outer box shadow</td></tr>
+            <tr><td><code>--cp-menu-shadow</code></td><td><code>0 8px 24px ...</code></td><td>More actions menu shadow (uses <code>--shadow-m</code> when set)</td></tr>
             <tr><td><code>--cp-split</code></td><td><code>48%</code></td><td>Editor/preview split position</td></tr>
           </tbody>
         </table>
@@ -193,7 +194,7 @@
         </table>
       </section>
 
-      <section id="keyboard">
+      <section id="keyboard" data-layout="stack" data-layout-gap="m">
         <h2>Keyboard Shortcuts</h2>
         <table>
           <thead>

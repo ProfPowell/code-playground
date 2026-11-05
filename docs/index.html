@@ -9,23 +9,23 @@
 
     <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.css">
     <script type="module" src="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.js"></script>
-    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.9.0"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.10.0"></script>
 
     <script type="module" src="https://unpkg.com/@profpowell/code-playground"></script>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
     <header class="site" data-sticky>
-      <nav data-layout="cluster" data-layout-justify="space-between" aria-label="Primary">
-        <a class="brand" href="index.html"><strong>&lt;code-playground&gt;</strong></a>
-        <nav data-layout="cluster" data-layout-gap="m" aria-label="Sections">
+      <a class="brand" href="index.html">&lt;code-playground&gt;</a>
+      <div class="site-actions">
+        <nav data-layout="cluster" data-layout-gap="xs" aria-label="Primary">
           <a href="index.html" aria-current="page">Home</a>
           <a href="demos.html">Demos</a>
           <a href="api.html">API</a>
           <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
-          <theme-picker compact></theme-picker>
         </nav>
-      </nav>
+        <theme-picker compact></theme-picker>
+      </div>
     </header>
 
     <main data-layout="stack" data-layout-gap="xl">
@@ -39,21 +39,26 @@
   <p>Edit the source and watch the preview update.</p>
   <button id="ping">Ping</button>
 </section></textarea>
-          <textarea slot="css">:root {
-  font-family: system-ui, sans-serif;
-  color-scheme: light dark;
-}
+          <textarea slot="css">/* The playground sets color-scheme to match
+   the page, so light-dark() follows its theme. */
 body {
+  box-sizing: border-box;
+  min-height: 100vh;
   margin: 0;
   padding: 2rem;
-  background: linear-gradient(180deg, #f6f8ff, #e6eefc);
+  font-family: system-ui, sans-serif;
+  background: light-dark(#eef2ff, #0f172a);
+  color: light-dark(#111827, #e5e7eb);
 }
 .card {
   max-width: 28rem;
   padding: 1.5rem;
-  border-radius: 1.25rem;
-  background: white;
-  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
+  border-radius: 1rem;
+  background: light-dark(white, #1e293b);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+h1 {
+  margin-block-start: 0;
 }
 button {
   appearance: none;
@@ -73,13 +78,13 @@ button {
   });</textarea>
         </code-playground>
 
-        <nav data-layout="cluster" data-layout-justify="center" data-layout-gap="s">
-          <a href="demos.html"><button>View Demos</button></a>
-          <a href="api.html"><button class="secondary">API Documentation</button></a>
-        </nav>
+        <div data-layout="cluster" data-layout-justify="center" data-layout-gap="s">
+          <a class="button" href="demos.html">View Demos</a>
+          <a class="button secondary" href="api.html">API Documentation</a>
+        </div>
       </section>
 
-      <section>
+      <section data-layout="stack" data-layout-gap="m">
         <h2>Features</h2>
         <div class="feature-grid">
           <a href="demos.html#auto-run">
@@ -104,7 +109,7 @@ button {
           </a>
           <a href="demos.html#codepen">
             <h3>CodePen Export</h3>
-            <p>One-click export opens the current playground state in CodePen.</p>
+            <p>Open the current playground state in a new CodePen pen.</p>
           </a>
           <a href="api.html#css-properties">
             <h3>Fully Themeable</h3>
@@ -147,7 +152,7 @@ button {
 &lt;/code-playground&gt;</code-block>
       </section>
 
-      <section>
+      <section data-layout="stack" data-layout-gap="m">
         <h2>Related Components</h2>
         <div class="related-grid">
           <a href="https://profpowell.github.io/pdf-viewer/">

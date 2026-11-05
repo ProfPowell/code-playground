@@ -4,7 +4,7 @@
    textareas and reserve the shell's height so nothing jumps. */
 code-playground:not(:defined) {
   display: block;
-  min-block-size: 34rem;
+  min-block-size: 31rem;
 }
 
 code-playground:not(:defined) > * {
@@ -12,51 +12,130 @@ code-playground:not(:defined) > * {
 }
 
 main {
-  max-width: 960px;
+  max-width: 1040px;
   margin-inline: auto;
   padding: 2.5rem 1.5rem;
 }
 
-.brand,
-.hero h1 {
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+/* Header */
+
+header.site {
+  flex-wrap: wrap;
+  row-gap: var(--size-xs);
 }
 
+.brand {
+  color: var(--color-text);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-xs);
+}
+
+/* Quiet the picker so it doesn't outrank the page's own calls to action. */
+theme-picker[compact] > [data-trigger] {
+  min-inline-size: 0;
+  padding: var(--size-xs);
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+theme-picker[compact] > [data-trigger]:hover,
+theme-picker[compact] > [data-trigger][aria-expanded="true"] {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+/* Hero */
+
+/* vanilla-breeze gives section.hero a tall minimum height for marketing pages. */
 .hero {
-  text-align: center;
+  min-block-size: 0;
   padding-block: 2rem 1rem;
 }
 
-.hero p {
+.hero > h1,
+.hero > p {
+  text-align: center;
+}
+
+.hero > h1 {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: clamp(1.5rem, 7vw, 3rem);
+  white-space: nowrap;
+}
+
+.hero > p {
   max-width: 38rem;
   margin-inline: auto;
 }
 
+/* Cards */
+
 .feature-grid,
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 1rem;
 }
 
 .feature-grid a,
 .related-grid a {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
   padding: 1rem;
-  border: 1px solid var(--border-color, currentColor);
-  border-radius: var(--radius-m, 8px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-m);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   text-decoration: none;
+  transition: border-color .15s ease;
 }
 
-.feature-grid h3 {
-  margin: 0 0 .25rem;
+/* These cards are labeled as a group, so the inline external-link arrow
+   would only add clutter after the description. */
+.related-grid a::after {
+  content: none;
+}
+
+.feature-grid a:hover,
+.related-grid a:hover {
+  border-color: var(--color-interactive);
+  color: var(--color-text-muted);
+}
+
+.feature-grid h3,
+.related-grid strong {
+  margin: 0;
+  color: var(--color-text);
   font-size: 1rem;
+  font-weight: 600;
+}
+
+.feature-grid a:hover h3,
+.related-grid a:hover strong {
+  color: var(--color-interactive);
 }
 
 .feature-grid p,
 .related-grid span {
   margin: 0;
   font-size: .875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-grid a,
+  .related-grid a {
+    transition: none;
+  }
 }
 
 site-footer,

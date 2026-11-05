@@ -9,23 +9,23 @@
 
     <link rel="stylesheet" href="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.css">
     <script type="module" src="https://unpkg.com/vanilla-breeze@0.5.0/dist/cdn/vanilla-breeze.js"></script>
-    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.9.0"></script>
+    <script type="module" src="https://unpkg.com/@profpowell/code-block@2.10.0"></script>
 
     <script type="module" src="https://unpkg.com/@profpowell/code-playground"></script>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
     <header class="site" data-sticky>
-      <nav data-layout="cluster" data-layout-justify="space-between" aria-label="Primary">
-        <a class="brand" href="index.html"><strong>&lt;code-playground&gt;</strong></a>
-        <nav data-layout="cluster" data-layout-gap="m" aria-label="Sections">
+      <a class="brand" href="index.html">&lt;code-playground&gt;</a>
+      <div class="site-actions">
+        <nav data-layout="cluster" data-layout-gap="xs" aria-label="Primary">
           <a href="index.html">Home</a>
           <a href="demos.html" aria-current="page">Demos</a>
           <a href="api.html">API</a>
           <a href="https://github.com/ProfPowell/code-playground">GitHub</a>
-          <theme-picker compact></theme-picker>
         </nav>
-      </nav>
+        <theme-picker compact></theme-picker>
+      </div>
     </header>
 
     <main data-layout="stack" data-layout-gap="xl">
