@@ -42,6 +42,22 @@ const MIN_SPLIT = 28
 const MAX_SPLIT = 72
 const PREVIEW_SANDBOX = 'allow-scripts allow-forms allow-modals allow-downloads allow-popups'
 
+const svgIcon = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`
+
+/** One stroke family for every control; each action gets a distinct glyph. */
+const ICONS = {
+  play: svgIcon('<path d="M6 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L7.5 3.64A1 1 0 0 0 6 4.5z" fill="currentColor"/>'),
+  preview: svgIcon('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/>'),
+  more: svgIcon('<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'),
+  zap: svgIcon('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'),
+  refresh: svgIcon('<path d="M3 12a9 9 0 0 1 15.36-6.36L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.36 6.36L3 16"/><path d="M3 21v-5h5"/>'),
+  reset: svgIcon('<path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/>'),
+  copy: svgIcon('<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/>'),
+  download: svgIcon('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>'),
+  external: svgIcon('<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'),
+  chevron: svgIcon('<path d="m9 18 6-6-6-6"/>')
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -144,7 +160,7 @@ export class CodePlayground extends HTMLElement {
     this._handleMessage = this._handleMessage.bind(this)
     this._handleDividerPointerDown = this._handleDividerPointerDown.bind(this)
     this._handleShareOutsideClick = (e) => {
-      const menu = this.shadowRoot.querySelector('.share-menu')
+      const menu = this.shadowRoot.querySelector('.menu')
       if (!menu) return
       if (!e.composedPath().includes(menu)) {
         this._closeShareMenu()
@@ -710,40 +726,26 @@ export class CodePlayground extends HTMLElement {
             <button class="tab-button" data-tab="js" role="tab" aria-selected="false">JS</button>
             <button class="tab-button" data-tab="result" role="tab" aria-selected="false">Result</button>
           </div>
-          <div class="status" data-role="status">Starting preview</div>
+          <div class="status" data-role="status" role="status">Starting preview</div>
           <div class="actions">
-            <button class="icon-button" data-action="reload-sources" type="button" title="Reload external sources" aria-label="Reload external sources" hidden>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 8a7 7 0 0113-3.5M15 8a7 7 0 01-13 3.5"/><path d="M14 1v4h-4M2 15v-4h4"/></svg>
+            <button class="icon-button" data-action="toggle-layout" type="button" title="Show preview" aria-label="Show preview" aria-pressed="true">
+              ${ICONS.preview}
             </button>
-            <button class="icon-button" data-action="soft-run" type="button" title="Run JS" aria-label="Run JavaScript">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2l10 6-10 6V2z"/></svg>
+            <button class="run-button" data-action="run" type="button" title="Rebuild the preview">
+              ${ICONS.play}<span>Run</span>
             </button>
-            <button class="icon-button primary" data-action="run" type="button" title="Rebuild preview" aria-label="Rebuild preview">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 8a7 7 0 0113-3.5M15 8a7 7 0 01-13 3.5"/><path d="M14 1v4h-4M2 15v-4h4"/></svg>
-            </button>
-            <button class="icon-button" data-action="reset" type="button" title="Reset to original" aria-label="Reset to original">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2v5h5"/><path d="M3 11a6 6 0 109-4"/><path d="M2 7l1-4"/></svg>
-            </button>
-            <button class="icon-button" data-action="toggle-layout" type="button" title="Toggle split view" aria-label="Toggle split view">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="2" width="14" height="12" rx="2"/><line x1="8" y1="2" x2="8" y2="14"/></svg>
-            </button>
-            <div class="share-container">
-              <button class="icon-button share-trigger" data-action="share-toggle" type="button" title="Share" aria-label="Share" aria-expanded="false" aria-haspopup="true">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10V1M8 1L5 4M8 1l3 3"/><path d="M2 10v4a1 1 0 001 1h10a1 1 0 001-1v-4"/></svg>
+            <div class="menu-container">
+              <button class="icon-button menu-trigger" data-action="menu-toggle" type="button" title="More actions" aria-label="More actions" aria-expanded="false" aria-haspopup="menu">
+                ${ICONS.more}
               </button>
-              <div class="share-menu" role="menu" hidden>
-                <button class="share-menu-item" data-action="copy" role="menuitem" type="button">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M3 11V3a1.5 1.5 0 011.5-1.5H11"/></svg>
-                  Copy source
-                </button>
-                <button class="share-menu-item" data-action="download" role="menuitem" type="button">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1v10M8 11l-3-3M8 11l3-3"/><path d="M2 12v2a1 1 0 001 1h10a1 1 0 001-1v-2"/></svg>
-                  Download HTML
-                </button>
-                <button class="share-menu-item" data-action="codepen" role="menuitem" type="button">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0L0 5v6l8 5 8-5V5L8 0zM7 10.5L2 7.5v-2l5 3v2zm1-3l-5-3L8 2l5 2.5-5 3zm1 3v-2l5-3v2l-5 3z"/></svg>
-                  Open in CodePen
-                </button>
+              <div class="menu" role="menu" aria-label="More actions" hidden>
+                <button class="menu-item" data-action="soft-run" role="menuitem" type="button">${ICONS.zap}<span>Re-run JS only</span></button>
+                <button class="menu-item" data-action="reload-sources" role="menuitem" type="button" hidden>${ICONS.refresh}<span>Reload sources</span></button>
+                <button class="menu-item" data-action="reset" role="menuitem" type="button">${ICONS.reset}<span>Reset to original</span></button>
+                <div class="menu-separator" role="separator"></div>
+                <button class="menu-item" data-action="copy" role="menuitem" type="button">${ICONS.copy}<span>Copy source</span></button>
+                <button class="menu-item" data-action="download" role="menuitem" type="button">${ICONS.download}<span>Download HTML</span></button>
+                <button class="menu-item" data-action="codepen" role="menuitem" type="button">${ICONS.external}<span>Open in CodePen</span></button>
               </div>
             </div>
           </div>
@@ -774,7 +776,7 @@ export class CodePlayground extends HTMLElement {
         </div>
         <section class="console-panel" part="console-panel">
           <button class="console-tray-toggle" data-action="toggle-console" type="button" aria-expanded="false">
-            <svg class="console-tray-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 2l4 4-4 4"/></svg>
+            <span class="console-tray-chevron">${ICONS.chevron}</span>
             <span>Console</span>
             <span class="console-indicator" aria-hidden="true"></span>
             <span class="panel-meta console-summary" data-role="console-summary">0 entries</span>
@@ -885,10 +887,14 @@ export class CodePlayground extends HTMLElement {
       ?.addEventListener('click', () => this.run())
 
     this.shadowRoot.querySelector('[data-action="soft-run"]')
-      ?.addEventListener('click', () => this.softRun())
+      ?.addEventListener('click', () => {
+        this._closeShareMenu()
+        this.softRun()
+      })
 
     this.shadowRoot.querySelector('[data-action="reload-sources"]')
       ?.addEventListener('click', () => {
+        this._closeShareMenu()
         this.reloadSources({
           forceApply: true
         }).finally(() => {
@@ -899,9 +905,15 @@ export class CodePlayground extends HTMLElement {
       })
 
     this.shadowRoot.querySelector('[data-action="reset"]')
-      ?.addEventListener('click', () => this.reset())
+      ?.addEventListener('click', () => {
+        this._closeShareMenu()
+        this.reset()
+      })
 
-    this.shadowRoot.querySelector('[data-action="share-toggle"]')
+    this.shadowRoot.querySelector('.menu')
+      ?.addEventListener('keydown', (event) => this._handleMenuKeydown(event))
+
+    this.shadowRoot.querySelector('[data-action="menu-toggle"]')
       ?.addEventListener('click', (e) => {
         e.stopPropagation()
         this._toggleShareMenu()
@@ -1481,8 +1493,8 @@ export class CodePlayground extends HTMLElement {
   }
 
   _toggleShareMenu() {
-    const menu = this.shadowRoot.querySelector('.share-menu')
-    const trigger = this.shadowRoot.querySelector('[data-action="share-toggle"]')
+    const menu = this.shadowRoot.querySelector('.menu')
+    const trigger = this.shadowRoot.querySelector('[data-action="menu-toggle"]')
     if (!menu || !trigger) return
 
     if (!menu.hidden) {
@@ -1490,6 +1502,7 @@ export class CodePlayground extends HTMLElement {
     } else {
       menu.hidden = false
       trigger.setAttribute('aria-expanded', 'true')
+      this._menuItems()[0]?.focus()
       clearTimeout(this._shareOutsideClickTimer)
       this._shareOutsideClickTimer = setTimeout(() => {
         document.addEventListener('click', this._handleShareOutsideClick)
@@ -1498,12 +1511,38 @@ export class CodePlayground extends HTMLElement {
   }
 
   _closeShareMenu() {
-    const menu = this.shadowRoot.querySelector('.share-menu')
-    const trigger = this.shadowRoot.querySelector('[data-action="share-toggle"]')
+    const menu = this.shadowRoot.querySelector('.menu')
+    const trigger = this.shadowRoot.querySelector('[data-action="menu-toggle"]')
     if (menu) menu.hidden = true
     if (trigger) trigger.setAttribute('aria-expanded', 'false')
     clearTimeout(this._shareOutsideClickTimer)
     document.removeEventListener('click', this._handleShareOutsideClick)
+  }
+
+  _menuItems() {
+    return [...this.shadowRoot.querySelectorAll('.menu-item')]
+      .filter((item) => !item.hidden && !item.disabled)
+  }
+
+  _handleMenuKeydown(event) {
+    const items = this._menuItems()
+    const index = items.indexOf(this.shadowRoot.activeElement)
+    const focusAt = (i) => items[(i + items.length) % items.length]?.focus()
+
+    switch (event.key) {
+      case 'ArrowDown': focusAt(index + 1); break
+      case 'ArrowUp': focusAt(index - 1); break
+      case 'Home': focusAt(0); break
+      case 'End': focusAt(items.length - 1); break
+      case 'Escape':
+      case 'Tab':
+        this._closeShareMenu()
+        if (event.key === 'Escape') this.shadowRoot.querySelector('[data-action="menu-toggle"]')?.focus()
+        if (event.key === 'Tab') return
+        break
+      default: return
+    }
+    event.preventDefault()
   }
 
   _applyViewMode() {
@@ -1513,12 +1552,9 @@ export class CodePlayground extends HTMLElement {
     const toggleBtn = this.shadowRoot.querySelector('[data-action="toggle-layout"]')
     if (toggleBtn) {
       const isSplit = this._viewMode === 'split'
-      toggleBtn.title = isSplit ? 'Code only' : 'Split view'
-      toggleBtn.setAttribute('aria-label', isSplit ? 'Code only' : 'Split view')
-      // Swap icon: split icon when in code mode, code icon when in split mode
-      toggleBtn.innerHTML = isSplit
-        ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="2" width="14" height="12" rx="2"/><line x1="8" y1="2" x2="8" y2="14"/></svg>'
-        : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="2" width="14" height="12" rx="2"/></svg>'
+      // A toggle keeps one label; aria-pressed carries the state.
+      toggleBtn.setAttribute('aria-pressed', String(isSplit))
+      toggleBtn.title = isSplit ? 'Hide preview' : 'Show preview'
     }
   }
 
@@ -1618,8 +1654,7 @@ export class CodePlayground extends HTMLElement {
           ? 'Running JS'
           : 'Rebuilding preview'
       } else {
-        const executionLabel = this._lastExecutionMode === 'soft' ? 'JS rerun' : 'Preview rebuilt'
-        previewMeta.textContent = `${executionLabel} · ${this._effectiveMode()} mode`
+        previewMeta.textContent = this._lastExecutionMode === 'soft' ? 'JS rerun' : 'Preview rebuilt'
       }
     }
 
@@ -1627,51 +1662,32 @@ export class CodePlayground extends HTMLElement {
     if (reloadSourcesButton) {
       reloadSourcesButton.hidden = !this._hasExternalSources()
       reloadSourcesButton.disabled = this._loadingSources
-      const reloadLabel = this._loadingSources ? 'Loading sources…' : 'Reload external sources'
-      reloadSourcesButton.title = reloadLabel
-      reloadSourcesButton.setAttribute('aria-label', reloadLabel)
     }
 
     const softRunButton = this.shadowRoot.querySelector('[data-action="soft-run"]')
     if (softRunButton) {
       const previewBusy = !this._ready && Boolean(this._runId)
       softRunButton.disabled = this._loadingSources || previewBusy || !this._runId
-      const softLabel = this._dirtyTypes.has('js') ? 'Run JS changes' : 'Run JS'
-      softRunButton.title = softLabel
-      softRunButton.setAttribute('aria-label', softLabel)
     }
 
     const runButton = this.shadowRoot.querySelector('[data-action="run"]')
     if (runButton) {
       const previewBusy = !this._ready && Boolean(this._runId)
       runButton.disabled = this._loadingSources || previewBusy
-      const runLabel = this._dirty && this._needsFullRebuild() ? 'Rebuild changes' : 'Rebuild preview'
-      runButton.title = runLabel
-      runButton.setAttribute('aria-label', runLabel)
+      runButton.dataset.pending = String(this.runMode === 'manual' && this._dirty)
+      runButton.title = this._dirty && this._needsFullRebuild() ? 'Apply your changes' : 'Rebuild the preview'
     }
 
     const status = this.shadowRoot.querySelector('[data-role="status"]')
     if (status) {
       if (this._loadingSources) {
-        status.textContent = 'Loading external sources'
-      } else if (!this._ready) {
-        status.textContent = this._activeExecutionMode === 'soft'
-          ? 'JavaScript rerunning'
-          : 'Preview rebuilding'
+        status.textContent = 'Loading sources…'
+      } else if (!this._ready || (this.runMode === 'auto' && this._dirty)) {
+        status.textContent = 'Updating…'
       } else if (this.runMode === 'manual' && this._dirty) {
-        status.textContent = this._pendingExecutionMode() === 'soft'
-          ? 'Manual mode: JavaScript changes pending'
-          : 'Manual mode: preview rebuild pending'
-      } else if (this.runMode === 'auto' && this._dirty) {
-        status.textContent = this._pendingExecutionMode() === 'soft'
-          ? 'Auto run: JavaScript changes queued'
-          : 'Auto run: preview rebuild queued'
-      } else if (this.runMode === 'auto') {
-        status.textContent = `Auto run, ${this._effectiveMode()} shell`
+        status.textContent = 'Manual run · changes pending'
       } else {
-        status.textContent = this._lastExecutionMode === 'soft'
-          ? 'Manual run, JavaScript rerun ready'
-          : `Manual run, ${this._effectiveMode()} shell`
+        status.textContent = this.runMode === 'auto' ? 'Auto run' : 'Manual run'
       }
     }
   }
@@ -1716,8 +1732,16 @@ export class CodePlayground extends HTMLElement {
         --cp-border: var(--color-border, #d0d7de);
         --cp-border-subtle: var(--color-border-subtle, #e5e7eb);
         --cp-text: var(--color-text, #111827);
-        --cp-muted: var(--color-text-muted, #6b7280);
+        --cp-muted: var(--color-text-muted, #4b5563);
         --cp-accent: var(--color-interactive, #2563eb);
+        --cp-on-accent: var(--color-text-on-interactive-auto, var(--color-text-on-primary, #ffffff));
+        --cp-focus: var(--color-focus-ring, var(--cp-accent));
+        --cp-hover-bg: color-mix(in oklab, var(--cp-text) 8%, transparent);
+        --cp-level-log: var(--color-info-text, #1d4ed8);
+        --cp-level-info: var(--color-info-text, #0369a1);
+        --cp-level-warn: var(--color-warning-text, #92400e);
+        --cp-level-error: var(--color-error-text, #b91c1c);
+        --cp-level-debug: var(--color-success-text, #166534);
         --cp-radius: var(--radius-m, 16px);
         --cp-radius-inner: var(--radius-s, 12px);
         --cp-font-sans: var(--font-sans, "SF Pro Text", "Segoe UI", sans-serif);
@@ -1765,8 +1789,13 @@ export class CodePlayground extends HTMLElement {
         --cp-border: var(--color-border, #374151);
         --cp-border-subtle: var(--color-border-subtle, #1f2937);
         --cp-text: var(--color-text, #e5eefb);
-        --cp-muted: var(--color-text-muted, #94a3b8);
+        --cp-muted: var(--color-text-muted, #a3b1c6);
         --cp-shadow: 0 24px 60px rgba(2, 6, 23, 0.48);
+        --cp-level-log: var(--color-info-text, #79c0ff);
+        --cp-level-info: var(--color-info-text, #a5d6ff);
+        --cp-level-warn: var(--color-warning-text, #e3b341);
+        --cp-level-error: var(--color-error-text, #ff7b72);
+        --cp-level-debug: var(--color-success-text, #7ee787);
         --cp-token-keyword: #ff7b72;
         --cp-token-string: #7ee787;
         --cp-token-number: #79c0ff;
@@ -1794,9 +1823,7 @@ export class CodePlayground extends HTMLElement {
         padding: 12px;
         border: 1px solid var(--cp-border);
         border-radius: var(--cp-radius);
-        background:
-          radial-gradient(circle at top right, color-mix(in oklab, var(--cp-accent) 14%, transparent), transparent 34%),
-          linear-gradient(180deg, color-mix(in oklab, var(--cp-toolbar-bg) 85%, var(--cp-bg)), var(--cp-bg));
+        background: var(--cp-bg);
         box-shadow: var(--cp-shadow);
       }
 
@@ -1839,22 +1866,22 @@ export class CodePlayground extends HTMLElement {
         align-items: stretch;
         gap: 0;
         margin-right: auto;
-        border-bottom: 1px solid var(--cp-border-subtle);
       }
 
       .actions {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 4px;
         padding: 6px 0;
       }
 
       .status {
         display: flex;
         align-items: center;
+        margin-inline-end: 4px;
         color: var(--cp-muted);
-        font-size: 0.8rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
       }
 
       .panel-meta {
@@ -2056,6 +2083,7 @@ export class CodePlayground extends HTMLElement {
       }
 
       .console-tray-chevron {
+        display: inline-flex;
         transition: transform 0.2s ease;
         color: var(--cp-muted);
         flex-shrink: 0;
@@ -2075,11 +2103,11 @@ export class CodePlayground extends HTMLElement {
       }
 
       .console-panel[data-severity="warn"] .console-indicator {
-        background: #cca700;
+        background: var(--cp-level-warn);
       }
 
       .console-panel[data-severity="error"] .console-indicator {
-        background: #f14c4c;
+        background: var(--cp-level-error);
       }
 
       .console-panel[data-open="true"] .console-tray-chevron {
@@ -2191,26 +2219,26 @@ export class CodePlayground extends HTMLElement {
       }
 
       .console-entry[data-level="log"] {
-        border-left-color: #3794ff;
+        border-left-color: var(--cp-level-log);
       }
 
       .console-entry[data-level="info"] {
-        border-left-color: #75beff;
-        background: color-mix(in oklab, #75beff 5%, transparent);
+        border-left-color: var(--cp-level-info);
+        background: color-mix(in oklab, var(--cp-level-info) 5%, transparent);
       }
 
       .console-entry[data-level="warn"] {
-        border-left-color: #cca700;
-        background: color-mix(in oklab, #cca700 6%, transparent);
+        border-left-color: var(--cp-level-warn);
+        background: color-mix(in oklab, var(--cp-level-warn) 6%, transparent);
       }
 
       .console-entry[data-level="error"] {
-        border-left-color: #f14c4c;
-        background: color-mix(in oklab, #f14c4c 6%, transparent);
+        border-left-color: var(--cp-level-error);
+        background: color-mix(in oklab, var(--cp-level-error) 6%, transparent);
       }
 
       .console-entry[data-level="debug"] {
-        border-left-color: #b5cea8;
+        border-left-color: var(--cp-level-debug);
       }
 
       .console-entry[data-origin="host"] {
@@ -2221,7 +2249,6 @@ export class CodePlayground extends HTMLElement {
         color: var(--cp-muted);
         white-space: nowrap;
         font-size: 0.72rem;
-        opacity: 0.7;
       }
 
       .console-level {
@@ -2240,28 +2267,28 @@ export class CodePlayground extends HTMLElement {
       }
 
       .console-entry[data-level="log"] .console-level {
-        background: color-mix(in oklab, #3794ff 14%, transparent);
-        color: #3794ff;
+        background: color-mix(in oklab, var(--cp-level-log) 14%, transparent);
+        color: var(--cp-level-log);
       }
 
       .console-entry[data-level="info"] .console-level {
-        background: color-mix(in oklab, #75beff 14%, transparent);
-        color: #75beff;
+        background: color-mix(in oklab, var(--cp-level-info) 14%, transparent);
+        color: var(--cp-level-info);
       }
 
       .console-entry[data-level="warn"] .console-level {
-        background: color-mix(in oklab, #cca700 16%, transparent);
-        color: #cca700;
+        background: color-mix(in oklab, var(--cp-level-warn) 16%, transparent);
+        color: var(--cp-level-warn);
       }
 
       .console-entry[data-level="error"] .console-level {
-        background: color-mix(in oklab, #f14c4c 16%, transparent);
-        color: #f14c4c;
+        background: color-mix(in oklab, var(--cp-level-error) 16%, transparent);
+        color: var(--cp-level-error);
       }
 
       .console-entry[data-level="debug"] .console-level {
-        background: color-mix(in oklab, #b5cea8 14%, transparent);
-        color: #b5cea8;
+        background: color-mix(in oklab, var(--cp-level-debug) 14%, transparent);
+        color: var(--cp-level-debug);
       }
 
       .console-entry[data-origin="host"] .console-level {
@@ -2311,7 +2338,8 @@ export class CodePlayground extends HTMLElement {
       }
 
       .tab-button[data-active="true"] {
-        color: var(--cp-accent);
+        color: var(--cp-text);
+        font-weight: 600;
         border-bottom-color: var(--cp-accent);
       }
 
@@ -2335,7 +2363,7 @@ export class CodePlayground extends HTMLElement {
       .action-button.primary {
         background: var(--cp-accent);
         border-color: var(--cp-accent);
-        color: white;
+        color: var(--cp-on-accent);
       }
 
       .action-button.subtle {
@@ -2348,105 +2376,139 @@ export class CodePlayground extends HTMLElement {
         transform: none;
       }
 
-      .icon-button {
+      .icon-button,
+      .run-button {
         appearance: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: none;
-        border-radius: 4px;
-        padding: 0.35rem;
+        gap: 6px;
+        min-block-size: 32px;
+        min-inline-size: 32px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        padding: 0 7px;
         background: transparent;
-        color: var(--cp-muted);
-        cursor: pointer;
-        transition: color 0.15s ease, background 0.15s ease;
-      }
-
-      .icon-button:hover {
         color: var(--cp-text);
-        background: color-mix(in oklab, var(--cp-text) 8%, transparent);
+        font: inherit;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
       }
 
-      .icon-button:active {
-        transform: scale(0.92);
+      .icon-button svg,
+      .run-button svg,
+      .menu-item svg {
+        inline-size: 18px;
+        block-size: 18px;
+        flex: none;
       }
 
-      .icon-button.primary {
-        color: var(--cp-accent);
+      .icon-button:hover:not(:disabled) {
+        background: var(--cp-hover-bg);
       }
 
-      .icon-button.primary:hover {
-        background: color-mix(in oklab, var(--cp-accent) 12%, transparent);
+      .icon-button[aria-pressed="true"],
+      .menu-trigger[aria-expanded="true"] {
+        border-color: var(--cp-border);
+        background: var(--cp-bg);
       }
 
-      .icon-button:focus-visible {
-        outline: 2px solid var(--cp-accent);
+      .run-button {
+        padding-inline: 10px 14px;
+        border-color: var(--cp-accent);
+        background: var(--cp-accent);
+        color: var(--cp-on-accent);
+      }
+
+      .run-button svg {
+        inline-size: 14px;
+        block-size: 14px;
+      }
+
+      .run-button:hover:not(:disabled) {
+        background: var(--color-interactive-hover, color-mix(in oklab, var(--cp-accent) 85%, black));
+      }
+
+      .run-button[data-pending="true"] {
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--cp-accent) 30%, transparent);
+      }
+
+      .icon-button:disabled,
+      .run-button:disabled,
+      .menu-item:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      .icon-button:focus-visible,
+      .run-button:focus-visible {
+        outline: 2px solid var(--cp-focus);
         outline-offset: 2px;
       }
 
-      .icon-button svg {
-        width: 16px;
-        height: 16px;
-      }
-
-      .share-container {
+      .menu-container {
         position: relative;
         display: inline-flex;
       }
 
-      .share-trigger[aria-expanded="true"] {
-        color: var(--cp-accent);
-        background: color-mix(in oklab, var(--cp-accent) 10%, transparent);
-      }
-
-      .share-menu {
+      .menu {
         position: absolute;
-        top: calc(100% + 4px);
-        right: 0;
-        min-width: 180px;
-        background: var(--cp-panel-bg);
+        inset-block-start: calc(100% + 6px);
+        inset-inline-end: 0;
+        min-inline-size: 200px;
+        padding: 4px;
+        background: var(--cp-bg);
         border: 1px solid var(--cp-border);
         border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
         z-index: 100;
       }
 
-      .share-menu-item {
+      .menu[hidden] {
+        display: none;
+      }
+
+      .menu-item {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        width: 100%;
-        padding: 0.625rem 1rem;
+        gap: 10px;
+        inline-size: 100%;
+        min-block-size: 36px;
+        padding: 0 10px;
         background: none;
         border: none;
-        border-bottom: 1px solid var(--cp-border-subtle);
+        border-radius: 4px;
         color: var(--cp-text);
         font: inherit;
         font-size: 0.875rem;
-        text-align: left;
+        text-align: start;
         cursor: pointer;
-        transition: background 0.15s ease;
       }
 
-      .share-menu-item:last-child {
-        border-bottom: none;
+      .menu-item[hidden] {
+        display: none;
       }
 
-      .share-menu-item:hover {
-        background: color-mix(in oklab, var(--cp-accent) 8%, var(--cp-panel-bg));
-      }
-
-      .share-menu-item:focus-visible {
-        outline: 2px solid var(--cp-accent);
-        outline-offset: -2px;
-      }
-
-      .share-menu-item svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
+      .menu-item svg {
         color: var(--cp-muted);
+      }
+
+      .menu-item:hover:not(:disabled),
+      .menu-item:focus-visible {
+        background: var(--cp-hover-bg);
+        outline: none;
+      }
+
+      .menu-item:focus-visible {
+        box-shadow: inset 0 0 0 2px var(--cp-focus);
+      }
+
+      .menu-separator {
+        block-size: 1px;
+        margin: 4px 6px;
+        background: var(--cp-border-subtle);
       }
 
       .console-filter-button {
@@ -2463,7 +2525,7 @@ export class CodePlayground extends HTMLElement {
       .console-filter-button[data-active="true"] {
         background: var(--cp-accent);
         border-color: var(--cp-accent);
-        color: white;
+        color: var(--cp-on-accent);
       }
 
       .console-filter-button[data-filter="warn"][data-active="true"],
@@ -2471,7 +2533,7 @@ export class CodePlayground extends HTMLElement {
       .console-filter-button[data-filter="info"][data-active="true"] {
         background: var(--cp-accent);
         border-color: var(--cp-accent);
-        color: white;
+        color: var(--cp-on-accent);
       }
 
       .action-button:hover:not(:disabled) {
@@ -2532,7 +2594,9 @@ export class CodePlayground extends HTMLElement {
       @media (prefers-reduced-motion: reduce) {
         .tab-button,
         .action-button,
-        .icon-button {
+        .icon-button,
+        .run-button,
+        .console-tray-chevron {
           transition: none;
         }
       }

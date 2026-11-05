@@ -85,6 +85,7 @@ test('loads html-src, css-src, js-src, and head-src content', async ({ page }) =
       && value?.head?.includes('external-head-marker')
   })
 
+  await el.locator('[data-action="menu-toggle"]').click()
   await expect(el.locator('[data-action="reload-sources"]')).toBeVisible()
   await expect(el.locator('.console-entries')).toContainText('external loaded')
 })
@@ -182,6 +183,7 @@ test('soft rerun preserves preview state while full rebuild resets it', async ({
   await expect(el.locator('.console-entries')).toContainText('run count 1')
   await expect(el.locator('[data-role="preview-meta"]')).toContainText('JS rerun')
 
+  await el.locator('[data-action="menu-toggle"]').click()
   await el.locator('[data-action="soft-run"]').click()
   await expect(el.locator('.console-entries')).toContainText('run count 2')
 
@@ -214,6 +216,7 @@ test('host diagnostics survive soft and full reruns', async ({ page }) => {
   await expect(el.locator('.console-entries')).toContainText('Failed to load JS source')
   await expect(el.locator('.console-entry[data-origin="host"]')).toHaveCount(1)
 
+  await el.locator('[data-action="menu-toggle"]').click()
   await el.locator('[data-action="soft-run"]').click()
   await expect(el.locator('.console-entries')).toContainText('Failed to load JS source')
 
@@ -606,4 +609,32 @@ test.describe('console indicator', () => {
     await mount(page, 'p', { persist: 'k11' }, { html: '<p>x</p>' })
     await expect(panel(page)).toHaveAttribute('data-open', 'true')
   })
+})
+
+test('more-actions menu opens, supports arrow keys, and closes on Escape', async ({ page }) => {
+  const el = page.locator('#auto-playground')
+  const trigger = el.locator('[data-action="menu-toggle"]')
+  const menu = el.locator('.menu')
+
+  await expect(menu).toBeHidden()
+  await trigger.click()
+  await expect(menu).toBeVisible()
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  await expect(el.locator('[data-action="soft-run"]')).toBeFocused()
+
+  await page.keyboard.press('ArrowDown')
+  await expect(el.locator('[data-action="reset"]')).toBeFocused()
+
+  await page.keyboard.press('Escape')
+  await expect(menu).toBeHidden()
+  await expect(trigger).toBeFocused()
+})
+
+test('layout toggle reports pressed state instead of swapping labels', async ({ page }) => {
+  const toggle = page.locator('#auto-playground [data-action="toggle-layout"]')
+  await expect(toggle).toHaveAttribute('aria-label', 'Show preview')
+  const before = await toggle.getAttribute('aria-pressed')
+  await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true')
+  await expect(toggle).toHaveAttribute('aria-label', 'Show preview')
 })
