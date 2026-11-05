@@ -1,6 +1,6 @@
 {
   "name": "@profpowell/code-playground",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A standalone web component for live HTML, CSS, and JavaScript editing with sandboxed preview and console output",
   "type": "module",
   "main": "dist/code-playground.js",
@@ -71,7 +71,7 @@
     "@custom-elements-manifest/analyzer": "^0.11.0",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
-    "@profpowell/code-block": "^2.9.0",
+    "@profpowell/code-block": "^2.10.0",
     "eslint": "^9.39.2",
     "prettier": "^3.8.0",
     "vanilla-breeze": "^0.5.0",

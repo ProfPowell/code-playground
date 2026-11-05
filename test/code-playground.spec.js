@@ -85,6 +85,7 @@ test('loads html-src, css-src, js-src, and head-src content', async ({ page }) =
       && value?.head?.includes('external-head-marker')
   })
 
+  await el.locator('[data-action="menu-toggle"]').click()
   await expect(el.locator('[data-action="reload-sources"]')).toBeVisible()
   await expect(el.locator('.console-entries')).toContainText('external loaded')
 })
@@ -182,6 +183,7 @@ test('soft rerun preserves preview state while full rebuild resets it', async ({
   await expect(el.locator('.console-entries')).toContainText('run count 1')
   await expect(el.locator('[data-role="preview-meta"]')).toContainText('JS rerun')
 
+  await el.locator('[data-action="menu-toggle"]').click()
   await el.locator('[data-action="soft-run"]').click()
   await expect(el.locator('.console-entries')).toContainText('run count 2')
 
@@ -214,6 +216,7 @@ test('host diagnostics survive soft and full reruns', async ({ page }) => {
   await expect(el.locator('.console-entries')).toContainText('Failed to load JS source')
   await expect(el.locator('.console-entry[data-origin="host"]')).toHaveCount(1)
 
+  await el.locator('[data-action="menu-toggle"]').click()
   await el.locator('[data-action="soft-run"]').click()
   await expect(el.locator('.console-entries')).toContainText('Failed to load JS source')
 
@@ -283,7 +286,7 @@ test.describe('load and setup', () => {
     const el = page.locator('code-playground').first()
     await expect(el.locator('textarea').first()).toBeHidden()
     const box = await el.boundingBox()
-    expect(box.height).toBeGreaterThan(500)
+    expect(box.height).toBeGreaterThan(450)
   })
 })
 
@@ -605,5 +608,109 @@ test.describe('console indicator', () => {
     await page.locator('#p [data-action="toggle-console"]').click()
     await mount(page, 'p', { persist: 'k11' }, { html: '<p>x</p>' })
     await expect(panel(page)).toHaveAttribute('data-open', 'true')
+  })
+})
+
+test('more-actions menu opens, supports arrow keys, and closes on Escape', async ({ page }) => {
+  const el = page.locator('#auto-playground')
+  const trigger = el.locator('[data-action="menu-toggle"]')
+  const menu = el.locator('.menu')
+
+  await expect(menu).toBeHidden()
+  await trigger.click()
+  await expect(menu).toBeVisible()
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  await expect(el.locator('[data-action="soft-run"]')).toBeFocused()
+
+  await page.keyboard.press('ArrowDown')
+  await expect(el.locator('[data-action="reset"]')).toBeFocused()
+
+  await page.keyboard.press('Escape')
+  await expect(menu).toBeHidden()
+  await expect(trigger).toBeFocused()
+})
+
+test('layout toggle reports pressed state instead of swapping labels', async ({ page }) => {
+  const toggle = page.locator('#auto-playground [data-action="toggle-layout"]')
+  await expect(toggle).toHaveAttribute('aria-label', 'Show preview')
+  const before = await toggle.getAttribute('aria-pressed')
+  await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true')
+  await expect(toggle).toHaveAttribute('aria-label', 'Show preview')
+})
+
+test.describe('visual design', () => {
+  const styleOf = (locator, property) =>
+    locator.evaluate((node, prop) => getComputedStyle(node)[prop], property)
+
+  test('regions share one frame instead of nesting boxes', async ({ page }) => {
+    const el = page.locator('#auto-playground')
+    const shell = el.locator('.shell')
+
+    expect(await styleOf(shell, 'paddingTop')).toBe('0px')
+    expect(['0px', 'normal']).toContain(await styleOf(shell, 'rowGap'))
+    expect(await styleOf(shell, 'boxShadow')).toBe('none')
+    for (const region of ['.toolbar', '.workspace']) {
+      expect(await styleOf(el.locator(region), 'borderLeftWidth')).toBe('0px')
+    }
+    expect(await styleOf(el.locator('.console-panel'), 'borderTopWidth')).toBe('1px')
+  })
+
+  test('Run is the primary action only when edits wait for it', async ({ page }) => {
+    const fill = (id) => styleOf(page.locator(`#${id} .run-button`), 'backgroundColor')
+    const accent = await styleOf(page.locator('#manual-playground .run-button'), 'borderTopColor')
+
+    expect(await fill('manual-playground')).toBe(accent)
+    expect(await fill('auto-playground')).not.toBe(accent)
+  })
+
+  test('controls follow the theme radius', async ({ page }) => {
+    const el = page.locator('#auto-playground')
+    await el.evaluate((node) => node.style.setProperty('--radius-s', '0px'))
+
+    await el.locator('[data-action="menu-toggle"]').click()
+    for (const selector of ['.run-button', '.icon-button', '.menu-item', '.action-button']) {
+      expect(await styleOf(el.locator(selector).first(), 'borderTopLeftRadius')).toBe('0px')
+    }
+  })
+
+  test('the divider is a hairline with a larger grab area', async ({ page }) => {
+    const divider = page.locator('#auto-playground .divider')
+    const box = await divider.boundingBox()
+
+    expect(box.width).toBe(1)
+    const hit = await page.evaluate(({ x, y }) => {
+      const host = document.querySelector('#auto-playground')
+      return host.shadowRoot.elementFromPoint(x, y)?.className
+    }, { x: box.x + 4, y: box.y + box.height / 2 })
+    expect(hit).toBe('divider')
+  })
+
+  test('the toolbar stays on one row when narrow, keeping the status readable to AT', async ({ page }) => {
+    const el = page.locator('#auto-playground')
+    await el.evaluate((node) => { node.style.inlineSize = '340px' })
+
+    const toolbar = await el.locator('.toolbar').boundingBox()
+    expect(toolbar.height).toBeLessThan(56)
+    await expect(el.locator('[data-role="status"]')).toHaveText(/Auto run/)
+  })
+
+  test('the console chevron is visible', async ({ page }) => {
+    const chevron = page.locator('#auto-playground .console-tray-chevron svg')
+    const box = await chevron.boundingBox()
+
+    expect(box.width).toBeGreaterThan(0)
+    expect(box.width).toBeLessThan(24)
+  })
+
+  test('the frame keeps its bottom corners without a console', async ({ page }) => {
+    const el = page.locator('#auto-playground')
+    await el.evaluate((node) => {
+      node.style.setProperty('--radius-m', '20px')
+      node.setAttribute('show-console', 'false')
+    })
+
+    const radius = await styleOf(el.locator('.workspace'), 'borderBottomLeftRadius')
+    expect(parseFloat(radius)).toBeGreaterThan(0)
   })
 })
