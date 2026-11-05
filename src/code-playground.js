@@ -1742,11 +1742,13 @@ export class CodePlayground extends HTMLElement {
         --cp-level-warn: var(--color-warning-text, #92400e);
         --cp-level-error: var(--color-error-text, #b91c1c);
         --cp-level-debug: var(--color-success-text, #166534);
-        --cp-radius: var(--radius-m, 16px);
-        --cp-radius-inner: var(--radius-s, 12px);
+        --cp-radius: var(--radius-m, 12px);
+        --cp-radius-inner: var(--radius-s, 6px);
+        --cp-frame-inset: calc(var(--cp-radius) - 1px);
         --cp-font-sans: var(--font-sans, "SF Pro Text", "Segoe UI", sans-serif);
         --cp-font-mono: var(--font-mono, "SFMono-Regular", Consolas, monospace);
-        --cp-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        --cp-shadow: none;
+        --cp-menu-shadow: var(--shadow-m, 0 8px 24px rgba(0, 0, 0, 0.14));
         --cp-toolbar-bg: color-mix(in oklab, var(--cp-panel-bg) 88%, var(--cp-bg));
         --cp-gutter-bg: color-mix(in oklab, var(--cp-panel-bg) 92%, var(--cp-bg));
         --cp-active-line: color-mix(in oklab, var(--cp-accent) 8%, var(--cp-editor-bg));
@@ -1790,7 +1792,6 @@ export class CodePlayground extends HTMLElement {
         --cp-border-subtle: var(--color-border-subtle, #1f2937);
         --cp-text: var(--color-text, #e5eefb);
         --cp-muted: var(--color-text-muted, #a3b1c6);
-        --cp-shadow: 0 24px 60px rgba(2, 6, 23, 0.48);
         --cp-level-log: var(--color-info-text, #79c0ff);
         --cp-level-info: var(--color-info-text, #a5d6ff);
         --cp-level-warn: var(--color-warning-text, #e3b341);
@@ -1819,8 +1820,6 @@ export class CodePlayground extends HTMLElement {
         grid-template-rows: auto minmax(0, 1fr);
         block-size: 100%;
         min-block-size: 0;
-        gap: 12px;
-        padding: 12px;
         border: 1px solid var(--cp-border);
         border-radius: var(--cp-radius);
         background: var(--cp-bg);
@@ -1851,12 +1850,19 @@ export class CodePlayground extends HTMLElement {
         gap: 10px;
       }
 
+      /* Containment makes a stacking context, so it must sit above the panels
+         for the menu to overlay them. */
       .toolbar {
+        container-type: inline-size;
+        position: relative;
+        z-index: 2;
         justify-content: space-between;
         flex-wrap: wrap;
-        padding: 0 12px;
-        border: 1px solid var(--cp-border);
-        border-radius: calc(var(--cp-radius-inner) + 2px);
+        column-gap: 4px;
+        padding-inline: 4px 8px;
+        border-block-end: 1px solid var(--cp-border);
+        border-start-start-radius: var(--cp-frame-inset);
+        border-start-end-radius: var(--cp-frame-inset);
         background: var(--cp-toolbar-bg);
         align-items: stretch;
       }
@@ -1880,7 +1886,7 @@ export class CodePlayground extends HTMLElement {
         align-items: center;
         margin-inline-end: 4px;
         color: var(--cp-muted);
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
         white-space: nowrap;
       }
 
@@ -1893,10 +1899,13 @@ export class CodePlayground extends HTMLElement {
         grid-area: 2 / 1;
         display: flex;
         min-block-size: 0;
-        border: 1px solid var(--cp-border);
-        border-radius: var(--cp-radius-inner);
         overflow: hidden;
         background: var(--cp-panel-bg);
+      }
+
+      .shell:has(> .console-panel[hidden]) .workspace {
+        border-end-start-radius: var(--cp-frame-inset);
+        border-end-end-radius: var(--cp-frame-inset);
       }
 
       .workspace[data-axis="vertical"] {
@@ -1993,16 +2002,24 @@ export class CodePlayground extends HTMLElement {
       }
 
       .editor-placeholder-error {
-        color: #dc2626;
+        color: var(--cp-level-error);
       }
 
+      /* A hairline to look at, with a wider invisible area to grab. */
       .divider {
-        flex: 0 0 10px;
+        flex: 0 0 1px;
         position: relative;
+        z-index: 1;
         cursor: col-resize;
-        background:
-          linear-gradient(180deg, transparent, color-mix(in oklab, var(--cp-border) 85%, transparent), transparent);
+        background: var(--cp-border);
         touch-action: none;
+      }
+
+      .divider::before {
+        content: '';
+        position: absolute;
+        inset-block: 0;
+        inset-inline: -5px;
       }
 
       .divider::after {
@@ -2010,19 +2027,42 @@ export class CodePlayground extends HTMLElement {
         position: absolute;
         inset: 50% auto auto 50%;
         inline-size: 4px;
-        block-size: 38px;
+        block-size: 32px;
         transform: translate(-50%, -50%);
         border-radius: 999px;
-        background: color-mix(in oklab, var(--cp-accent) 18%, var(--cp-border));
+        background: var(--cp-accent);
+        opacity: 0;
+        transition: opacity 0.15s ease;
+      }
+
+      .divider:hover::after,
+      .divider:focus-visible::after {
+        opacity: 1;
       }
 
       .workspace[data-axis="vertical"] .divider {
         cursor: row-resize;
       }
 
+      .workspace[data-axis="vertical"] .divider::before {
+        inset-block: -5px;
+        inset-inline: 0;
+      }
+
       .workspace[data-axis="vertical"] .divider::after {
-        inline-size: 38px;
+        inline-size: 32px;
         block-size: 4px;
+      }
+
+      @media (pointer: coarse) {
+        .divider::before {
+          inset-inline: -12px;
+        }
+
+        .workspace[data-axis="vertical"] .divider::before {
+          inset-block: -12px;
+          inset-inline: 0;
+        }
       }
 
       .panel-header {
@@ -2030,6 +2070,17 @@ export class CodePlayground extends HTMLElement {
         padding: 10px 12px;
         border-bottom: 1px solid var(--cp-border-subtle);
         background: color-mix(in oklab, var(--cp-panel-bg) 92%, var(--cp-preview-bg));
+      }
+
+      .preview-panel > .panel-header {
+        min-block-size: 28px;
+        padding-block: 4px;
+        color: var(--cp-muted);
+        font-size: 0.75rem;
+      }
+
+      .preview-panel > .panel-header .panel-meta {
+        font-size: inherit;
       }
 
       iframe {
@@ -2056,8 +2107,9 @@ export class CodePlayground extends HTMLElement {
       }
 
       .console-panel {
-        border: 1px solid var(--cp-border);
-        border-radius: var(--cp-radius-inner);
+        border-block-start: 1px solid var(--cp-border);
+        border-end-start-radius: var(--cp-frame-inset);
+        border-end-end-radius: var(--cp-frame-inset);
         overflow: hidden;
         background: var(--cp-panel-bg);
       }
@@ -2087,6 +2139,11 @@ export class CodePlayground extends HTMLElement {
         transition: transform 0.2s ease;
         color: var(--cp-muted);
         flex-shrink: 0;
+      }
+
+      .console-tray-chevron svg {
+        inline-size: 14px;
+        block-size: 14px;
       }
 
       .console-indicator {
@@ -2166,7 +2223,7 @@ export class CodePlayground extends HTMLElement {
         inline-size: 100%;
         min-inline-size: 10rem;
         border: 1px solid var(--cp-border);
-        border-radius: 4px;
+        border-radius: var(--cp-radius-inner);
         padding: 4px 8px;
         background: color-mix(in oklab, var(--cp-bg) 82%, var(--cp-panel-bg));
         color: var(--cp-text);
@@ -2176,11 +2233,6 @@ export class CodePlayground extends HTMLElement {
 
       .console-search-input::placeholder {
         color: var(--cp-muted);
-      }
-
-      .console-search-input:focus-visible {
-        outline: 2px solid var(--cp-accent);
-        outline-offset: 2px;
       }
 
       .console-toggle {
@@ -2255,7 +2307,7 @@ export class CodePlayground extends HTMLElement {
         display: inline-flex;
         align-items: center;
         padding: 0 0.4rem;
-        border-radius: 3px;
+        border-radius: var(--cp-radius-inner);
         font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
@@ -2327,6 +2379,7 @@ export class CodePlayground extends HTMLElement {
         border: none;
         border-bottom: 2px solid transparent;
         border-radius: 0;
+        margin-block-end: -1px;
         padding: 0.5rem 0.75rem;
         background: transparent;
         color: var(--cp-muted);
@@ -2350,14 +2403,14 @@ export class CodePlayground extends HTMLElement {
       .action-button {
         appearance: none;
         border: 1px solid var(--cp-border);
-        border-radius: 6px;
+        border-radius: var(--cp-radius-inner);
         padding: 0.4rem 0.75rem;
         background: color-mix(in oklab, var(--cp-bg) 80%, var(--cp-panel-bg));
         color: var(--cp-text);
         font: inherit;
         font-size: 0.85rem;
         cursor: pointer;
-        transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+        transition: background 0.16s ease, border-color 0.16s ease;
       }
 
       .action-button.primary {
@@ -2373,7 +2426,6 @@ export class CodePlayground extends HTMLElement {
       .action-button:disabled {
         opacity: 0.55;
         cursor: default;
-        transform: none;
       }
 
       .icon-button,
@@ -2386,7 +2438,7 @@ export class CodePlayground extends HTMLElement {
         min-block-size: 32px;
         min-inline-size: 32px;
         border: 1px solid transparent;
-        border-radius: 6px;
+        border-radius: var(--cp-radius-inner);
         padding: 0 7px;
         background: transparent;
         color: var(--cp-text);
@@ -2415,8 +2467,19 @@ export class CodePlayground extends HTMLElement {
         background: var(--cp-bg);
       }
 
+      /* Auto mode reruns on its own, so Run is only a manual override. */
       .run-button {
-        padding-inline: 10px 14px;
+        padding-inline: 8px 12px;
+        border-color: var(--cp-border);
+        background: var(--cp-bg);
+        color: var(--cp-text);
+      }
+
+      .run-button:hover:not(:disabled) {
+        background: var(--cp-hover-bg);
+      }
+
+      :host([run-mode="manual"]) .run-button {
         border-color: var(--cp-accent);
         background: var(--cp-accent);
         color: var(--cp-on-accent);
@@ -2427,7 +2490,8 @@ export class CodePlayground extends HTMLElement {
         block-size: 14px;
       }
 
-      .run-button:hover:not(:disabled) {
+      :host([run-mode="manual"]) .run-button:hover:not(:disabled) {
+        border-color: var(--color-interactive-hover, color-mix(in oklab, var(--cp-accent) 85%, black));
         background: var(--color-interactive-hover, color-mix(in oklab, var(--cp-accent) 85%, black));
       }
 
@@ -2461,8 +2525,8 @@ export class CodePlayground extends HTMLElement {
         padding: 4px;
         background: var(--cp-bg);
         border: 1px solid var(--cp-border);
-        border-radius: 8px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+        border-radius: var(--cp-radius);
+        box-shadow: var(--cp-menu-shadow);
         z-index: 100;
       }
 
@@ -2479,7 +2543,7 @@ export class CodePlayground extends HTMLElement {
         padding: 0 10px;
         background: none;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--cp-radius-inner);
         color: var(--cp-text);
         font: inherit;
         font-size: 0.875rem;
@@ -2517,7 +2581,6 @@ export class CodePlayground extends HTMLElement {
         font-weight: 500;
         text-transform: capitalize;
         letter-spacing: 0;
-        border-radius: 3px;
         border: 1px solid var(--cp-border-subtle);
         background: transparent;
       }
@@ -2528,28 +2591,43 @@ export class CodePlayground extends HTMLElement {
         color: var(--cp-on-accent);
       }
 
-      .console-filter-button[data-filter="warn"][data-active="true"],
-      .console-filter-button[data-filter="error"][data-active="true"],
-      .console-filter-button[data-filter="info"][data-active="true"] {
-        background: var(--cp-accent);
-        border-color: var(--cp-accent);
-        color: var(--cp-on-accent);
+      .action-button.subtle:hover:not(:disabled) {
+        background: var(--cp-hover-bg);
       }
 
-      .action-button:hover:not(:disabled) {
-        transform: translateY(-1px);
-      }
-
-      .action-button:disabled:hover {
-        transform: none;
-      }
-
-      .tab-button:focus-visible,
       .action-button:focus-visible,
       .divider:focus-visible,
       .console-search-input:focus-visible {
-        outline: 2px solid var(--cp-accent);
+        outline: 2px solid var(--cp-focus);
         outline-offset: 2px;
+      }
+
+      /* The toolbar edge would cut off a ring drawn outside the tab. */
+      .tab-button:focus-visible {
+        outline: 2px solid var(--cp-focus);
+        outline-offset: -3px;
+        border-radius: var(--cp-radius-inner);
+      }
+
+      /* Keeps the toolbar on one row in narrow playgrounds. The status stays
+         in the accessibility tree because it's a live region. */
+      @container (max-width: 26rem) {
+        .status {
+          position: absolute;
+          inline-size: 1px;
+          block-size: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+        }
+
+        .tab-button {
+          padding-inline: 0.375rem;
+        }
+
+        .run-button {
+          padding-inline: 6px 8px;
+        }
       }
 
       .visually-hidden {
@@ -2573,8 +2651,13 @@ export class CodePlayground extends HTMLElement {
           cursor: row-resize;
         }
 
+        .divider::before {
+          inset-block: -5px;
+          inset-inline: 0;
+        }
+
         .divider::after {
-          inline-size: 38px;
+          inline-size: 32px;
           block-size: 4px;
         }
 
@@ -2596,6 +2679,7 @@ export class CodePlayground extends HTMLElement {
         .action-button,
         .icon-button,
         .run-button,
+        .divider::after,
         .console-tray-chevron {
           transition: none;
         }

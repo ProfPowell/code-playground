@@ -65,7 +65,7 @@ The component loads as a deferred module, so the browser can paint your page bef
 ```css
 code-playground:not(:defined) {
   display: block;
-  min-block-size: 34rem; /* approximate height of the default layout */
+  min-block-size: 31rem; /* approximate height of the default layout */
 }
 
 code-playground:not(:defined) > * {
